@@ -1,96 +1,101 @@
-# 创建一个新的 TypeScript 项目
+# 从零到一｜创建一个新的 TypeScript 项目
 
-## 一、初始化 NPM 项目
+## 一、初始化 npm 项目
 
-```
-# npm
+npm:
+
+```bash
 npm init
+```
 
-# git
+Git:
+
+```bash
 git init
 ```
 
 ## 二、安装 TypeScript
 
+```bash
+npm i typescript -D
 ```
-npm i typescript --save-dev
 
-# 查看版本
+查看版本:
+
+```bash
 npx tsc --version
 ```
 
 ## 三、初始化配置文件 `tsconfig.json`
 
-```
+```bash
 npx tsc --init
 ```
-
-<!--more-->
 
 ## 四、编译 `.ts`
 
 新建 `index.ts` 文件。
 
-项目目录：
+项目目录:
 
-```
+```plain
 ├── package.json
 ├── tsconfig.json
 └── src
     └── index.ts
 ```
 
-文件 `index.ts`：
+文件 `index.ts`:
 
-```
-const ProjectName: string = 'new-typescript-project'
+```javascript
+const ProjectName = "new-typescript-project";
 
-function say (): string {
-  return `This project is ${ProjectName}.`
+function say(): string {
+  return `This project is ${ProjectName}.`;
 }
 
-console.log(say())
+console.log(say());
 ```
 
-**编译：**
+编译:
 
-```
-npx tsc src/index.ts
+```bash
+npx tsc src/index.ts --outDir dist
 ```
 
-**结果：**
+结果:
 
-```
-var ProjectName = 'new-typescript-project';
+```javascript
+var ProjectName = "new-typescript-project";
 function say() {
-    return "This project is " + ProjectName + ".";
+    return "This project is ".concat(ProjectName, ".");
 }
 console.log(say());
 ```
 
-监听文件变化：
+监听文件变化:
 
+```bash
+npx tsc --watch src/index.ts --outDir dist
 ```
-npx tsc -w
-```
 
-## 五、使用 Webpack 打包
+## 五、使用 webpack 打包
 
-### 5.1 安装 Webpack
+### 5.1 安装 webpack
 
-```
+```bash
 npm install webpack webpack-cli -D
 ```
 
 ### 5.2 安装 TypeScript 加载器 `ts-loader`
 
-```
+```bash
 npm install ts-loader -D
 ```
 
 ### 5.3 配置 `webpack.config.js`
 
-```
+```javascript
 const path = require('path');
 
 module.exports = {
@@ -116,92 +121,125 @@ module.exports = {
 
 ### 5.4 打包
 
-```
+```bash
 npx webpack --config webpack.config.js
+```
+
+结果:
+
+```javascript
+(()=>{"use strict";console.log("This project is new-typescript-project.")})();
 ```
 
 ## 六、使用 ESLint 规范代码
 
 ### 6.1 安装依赖
 
-```
-npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
-```
-
-### 6.2 新增配置文件 `.eslintrc`
-
-```
-# shell
-touch .eslintrc
-
-# .eslintrc
-{
-  "root": true,
-  "parser": "@typescript-eslint/parser",
-  "plugins": [
-    "@typescript-eslint"
-  ],
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended"
-  ]
-}
+```bash
+npm install eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-prettier -D
 ```
 
-### 6.3 配置忽略文件 `.eslintignore`
+### 6.2 新增配置文件 `eslint.config.cjs`
 
-```
-# shell
-touch .eslintignore
-
-# .eslintignore
-node_modules
-dist
+```bash
+touch eslint.config.cjs
 ```
 
-### 6.4 `package.json` 中添加检测脚本
+```javascript
+const tsPlugin = require('@typescript-eslint/eslint-plugin');
+const tsParser = require('@typescript-eslint/parser');
+const prettierPlugin = require('eslint-plugin-prettier');
+const tsRecommendedRules =
+  tsPlugin && tsPlugin.configs && tsPlugin.configs.recommended
+    ? tsPlugin.configs.recommended.rules
+    : {};
 
-```
-"lint": "eslint . --ext .ts"
+module.exports = [
+  {
+    ignores: ['node_modules/**', 'dist/**', 'build/**', '*.min.js', '.git/**']
+  },
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        project: ['./tsconfig.json'],
+        tsconfigRootDir: __dirname
+      }
+    },
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+      prettier: prettierPlugin
+    },
+    rules: {
+      ...tsRecommendedRules,
+      'prettier/prettier': 'error',
+      'no-console': 'off',
+      '@typescript-eslint/no-inferrable-types': 'off'
+    }
+  },
+  {
+    files: ['**/*.js', '**/*.jsx'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module'
+    },
+    rules: {
+      'no-unused-vars': 'warn'
+    }
+  }
+];
 ```
 
-### 6.5 运行检测
+### 6.3 `package.json` 中添加检测脚本
 
+```plain
+"lint": "eslint src/index.ts --ext .ts"
 ```
+
+### 6.4 运行检测
+
+```bash
 npm run lint
 ```
 
-报错：
+报错示例:
 
-```
-~/new-typescript-project/src/index.ts
-  1:7  error  Type string trivially inferred from a string literal, remove type annotation  @typescript-eslint/no-inferrable-types
+```javascript
+const ProjectName = "new-typescript-project"
 ```
 
-修改相应代码：
-
+```plain
+1:45  error  Insert `;`  prettier/prettier
 ```
-- const ProjectName: string = 'new-typescript-project'
-+ const ProjectName = 'new-typescript-project'
+
+修改相应代码:
+
+```plain
+- const ProjectName = "new-typescript-project"
++ const ProjectName = "new-typescript-project";
 ```
 
 再次运行通过！
 
-### 6.6 自动修复不规范的代码
+### 6.5 自动修复不规范的代码
 
-脚本添加 `--fix` 选项：
+脚本添加 `--fix` 选项:
 
+```plain
+"lint:fix": "eslint src/index.ts --ext .ts --fix"
 ```
-"lint-and-fix": "eslint . --ext .ts --fix"
-```
 
-### 6.7 添加更多扩展文件
+### 6.6 添加更多扩展文件
 
-```
-"lint-and-fix": "eslint . --ext 'ts,tsx' --fix"
+```plain
+"lint:fix": "eslint src/index.ts --ext .ts,.tsx --fix"
 ```
 
 ## 附录
 
-案例：[GitHub: new-typescript-project](https://github.com/chengchuu/new-typescript-project)
+案例: [GitHub: new-typescript-project](https://github.com/chengchuu/new-typescript-project)
+
+本文章首次编辑于 2020-08-18，最近更新于 2025-10-27。项目代码在 Node.js 16.x 上已测试可稳定运行。

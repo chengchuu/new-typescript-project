@@ -204,4 +204,4 @@ npm run lint
 
 ## 附录
 
-案例：[GitHub: new-typescript-project](https://github.com/mazeyqian/new-typescript-project)
+案例：[GitHub: new-typescript-project](https://github.com/chengchuu/new-typescript-project)

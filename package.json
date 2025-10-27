@@ -11,7 +11,7 @@
   "keywords": [
     "typescript"
   ],
-  "author": "MazeyQian",
+  "author": "Cheng",
   "license": "ISC",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "3.9.0",

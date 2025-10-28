@@ -1,8 +1,8 @@
 {
   "name": "new-typescript-project",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Create a new TypeScript project.",
-  "main": "index.js",
+  "main": "dist/index.js",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",

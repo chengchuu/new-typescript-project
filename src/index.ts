@@ -1,7 +1,7 @@
-const ProjectName = 'new-typescript-project'
+const ProjectName = "new-typescript-project";
 
-function say (): string {
-  return `This project is ${ProjectName}.`
+function say(): string {
+  return `This project is ${ProjectName}.`;
 }
 
-console.log(say())
+console.log(say());

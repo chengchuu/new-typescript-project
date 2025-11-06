@@ -44,5 +44,10 @@
   "dependencies": {
     "@babel/runtime": "^7.28.4",
     "@babel/runtime-corejs3": "^7.28.4"
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ]
 }

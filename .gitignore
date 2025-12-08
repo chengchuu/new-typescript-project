@@ -15,7 +15,6 @@ lib/
 
 # Editor directories and files
 .idea
-.vscode
 *.suo
 *.ntvs*
 *.njsproj
@@ -23,5 +22,5 @@ lib/
 
 # cache
 .sass-cache/
-# package-lock.json
+package-lock.json
 yarn-error.log

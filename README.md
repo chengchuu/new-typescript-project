@@ -1,4 +1,4 @@
-# 从零到一: 创建一个新的 TypeScript 项目
+# 从零到一｜创建一个新的 TypeScript 项目
 
 ## 一、初始化 npm 项目
 

@@ -9,6 +9,9 @@ This repository is a minimal TypeScript ESM example rather than a multi-componen
 - `package.json` declares the ESM package contract, Node.js 22 minimum, dependency versions, task scripts, JavaScript entry point (`dist/index.js`), declaration entry point (`dist/index.d.ts`), and published `dist/` plus `src/` files. No CommonJS build is provided.
 - `pnpm-lock.yaml` is committed. Use pnpm to install dependencies, do not create another lockfile, and do not add a `packageManager` field.
 - `README.md` is a reproducible Simplified Chinese tutorial for the current TypeScript, webpack, ESLint, and Prettier setup.
+- `site/` contains the maintained Simplified Chinese Pages template, route metadata, semantic styles, and theme behavior. Keep local asset references relative to the project subpath.
+- `scripts/build-site.mjs` generates the complete ignored `site-dist/` artifact. `scripts/validate-site.mjs` checks the artifact, theme scenarios, and deployment contract. Do not edit or commit `site-dist/`.
+- `.github/workflows/pages.yml` checks the package and site, uploads only `site-dist/`, and deploys it through the protected `github-pages` environment. It must not publish the npm package.
 - `.vscode/settings.json` only customizes the editor window title.
 
 ## Compiler and runtime contracts
@@ -47,6 +50,9 @@ npm run typecheck
 npm run build:ts
 npm run build:webpack
 npm run check
+npm run build:site
+npm run validate:site
+npm run check:site
 ```
 
 `build:ts` uses the TypeScript 7 project compiler and emits `dist/index.js`, declarations, declaration maps, and source maps. `build:webpack` sends the same source and project configuration through the TypeScript 6 compatibility API and emits `dist/bundle.js` plus its source map. Run `node dist/index.js` and `node dist/bundle.js` when runtime behavior changes; both must print the same message.
@@ -54,5 +60,7 @@ npm run check
 `npm run watch` starts the TypeScript 7 project compiler in watch mode. `npm run format` and `npm run lint:fix` write changes, so inspect their scope before using them.
 
 `npm pack` and `npm publish` remove only the generated `dist/` directory, then run `npm run check` through the `prepack` lifecycle. This prevents stale package files and guarantees that ignored artifacts exist before packaging. Use `npm pack --dry-run` to inspect the release contents without publishing.
+
+`build:site` rebuilds `site-dist/` from maintained files. `validate:site` checks the generated route, SEO and crawler metadata, exact external asset tags, local assets, theme fallbacks, and Pages workflow. `check:site` runs both commands. Keep `npm run check` and `prepack` package-only.
 
 The repository has no automated test suite. `npm run check` is the health-check contract and must not be described as a test command. For each change, run the focused checks plus the aggregate check, then run `git diff --check` and inspect `git status --short`. Keep maintained source under `src/`, change build configuration only when the build contract changes, and do not commit generated output.

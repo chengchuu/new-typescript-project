@@ -4,7 +4,14 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["node_modules/**", "dist/**", "build/**", "*.min.js", ".git/**"],
+    ignores: [
+      "node_modules/**",
+      "dist/**",
+      "site-dist/**",
+      "build/**",
+      "*.min.js",
+      ".git/**",
+    ],
   },
   eslint.configs.recommended,
   tseslint.configs.recommended,
@@ -13,6 +20,15 @@ export default tseslint.config(
     rules: {
       "no-console": "off",
       "@typescript-eslint/no-inferrable-types": "off",
+    },
+  },
+  {
+    files: ["site/**/*.js"],
+    languageOptions: {
+      globals: {
+        document: "readonly",
+        window: "readonly",
+      },
     },
   },
   eslintConfigPrettier,

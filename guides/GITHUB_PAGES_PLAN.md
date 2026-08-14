@@ -2,7 +2,7 @@
 
 ## Status and objective
 
-Status: Planned
+Status: Completed
 
 Add a responsive Simplified Chinese tutorial landing page at `https://chengchuu.github.io/new-typescript-project/`. Keep the Pages site separate from the package runtime and `dist/` artifacts. Maintained site source belongs under `site/`, generated deployment output belongs under ignored `site-dist/`, and package publishing remains independent.
 
@@ -35,6 +35,7 @@ Do not add an npm publication claim, interactive playground, Progressive Web App
 
 Use these exact Bootstrap 5.3.8 CDN tags:
 
+<!-- prettier-ignore -->
 ```html
 <link type="text/css" href="//i.mazey.net/lib/bootstrap/5.3.8/css/bootstrap.min.css" rel="stylesheet" />
 <script type="text/javascript" src="//i.mazey.net/lib/bootstrap/5.3.8/js/bootstrap.bundle.min.js"></script>
@@ -44,6 +45,7 @@ Preserve the protocol-relative URLs and attributes. Keep Bootstrap site-only and
 
 Use this exact favicon tag in the generated page metadata:
 
+<!-- prettier-ignore -->
 ```html
 <link rel="icon" type="image/png" sizes="32x32" href="//i.mazey.net/icon/fav/logo-dark-circle-transparent-32x32.png">
 ```

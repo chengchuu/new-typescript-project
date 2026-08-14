@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="zh-CN" data-bs-theme="light" style="color-scheme: light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{TITLE}}</title>
+    <meta name="description" content="{{DESCRIPTION}}" />
+    <meta name="robots" content="{{ROBOTS}}" />
+    <link rel="canonical" href="{{CANONICAL_URL}}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="{{TITLE}}" />
+    <meta property="og:description" content="{{DESCRIPTION}}" />
+    <meta property="og:url" content="{{CANONICAL_URL}}" />
+    <meta name="theme-color" content="#4d8ffb" />
+    <!-- prettier-ignore -->
+    <link rel="icon" type="image/png" sizes="32x32" href="//i.mazey.net/icon/fav/logo-dark-circle-transparent-32x32.png">
+    <script type="text/javascript" src="./theme.js"></script>
+    <!-- prettier-ignore -->
+    <link type="text/css" href="//i.mazey.net/lib/bootstrap/5.3.8/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳到主要内容</a>
+
+    <header class="site-header">
+      <nav class="navbar site-navbar" aria-label="主要导航">
+        <div class="container site-navbar-inner">
+          <a
+            class="navbar-brand site-brand"
+            href="./"
+            aria-label="TypeScript 7 项目教程首页"
+          >
+            <span class="brand-mark" aria-hidden="true">TS</span>
+            <span>new-typescript-project</span>
+          </a>
+
+          <button
+            class="site-nav-toggle"
+            type="button"
+            aria-controls="site-navigation"
+            aria-expanded="false"
+            data-nav-toggle
+          >
+            <span class="visually-hidden">切换导航</span>
+            <span aria-hidden="true">菜单</span>
+          </button>
+
+          <div
+            class="site-nav-links"
+            id="site-navigation"
+            data-nav-links
+            data-expanded="false"
+          >
+            <a href="#overview">技术概览</a>
+            <a href="#workflow">验证流程</a>
+            <a href="#compilers">双编译器</a>
+            <a href="https://github.com/chengchuu/new-typescript-project"
+              >GitHub</a
+            >
+            <label class="theme-control">
+              <span class="visually-hidden">主题模式</span>
+              <select
+                class="form-select form-select-sm"
+                data-theme-selector
+                aria-label="主题模式"
+              >
+                <option value="system">跟随系统</option>
+                <option value="light">浅色</option>
+                <option value="dark">深色</option>
+              </select>
+            </label>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main-content">
+      <section class="hero-section">
+        <div class="container hero-grid">
+          <div>
+            <p class="eyebrow">TypeScript 7 · Node.js 22 · ESM</p>
+            <h1>从初始化到双路径构建</h1>
+            <p class="hero-lead">
+              使用原生 TypeScript 7 CLI 完成类型检查和包构建，同时通过
+              TypeScript 6 兼容 API 保留 webpack 与 ESLint 工具链。
+            </p>
+            <div class="hero-actions">
+              <a class="btn btn-primary" href="#workflow">查看验证流程</a>
+              <a
+                class="btn btn-outline-primary"
+                href="https://github.com/chengchuu/new-typescript-project#readme"
+                >完整 README</a
+              >
+            </div>
+          </div>
+          <aside class="hero-panel" aria-label="项目环境">
+            <div class="status-row">
+              <span>运行环境</span><strong>Node.js 22+</strong>
+            </div>
+            <div class="status-row">
+              <span>模块格式</span><strong>ESM</strong>
+            </div>
+            <div class="status-row">
+              <span>命令行编译器</span><strong>TypeScript 7.0.2</strong>
+            </div>
+            <div class="status-row">
+              <span>兼容 API</span><strong>TypeScript 6</strong>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section
+        class="section-block"
+        id="overview"
+        aria-labelledby="overview-title"
+      >
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">技术概览</p>
+            <h2 id="overview-title">一套配置，两条构建路径</h2>
+            <p>
+              <code>tsconfig.json</code> 是统一配置来源。包构建和 webpack
+              打包各自生成独立产物。
+            </p>
+          </div>
+
+          <div class="row g-4">
+            <div class="col-12 col-md-6 col-xl-3">
+              <article class="feature-card h-100">
+                <span class="step-number">01</span>
+                <h3>准备环境</h3>
+                <p>使用 Node.js 22 和 pnpm 安装锁定的开发依赖。</p>
+                <code>pnpm install</code>
+              </article>
+            </div>
+            <div class="col-12 col-md-6 col-xl-3">
+              <article class="feature-card h-100">
+                <span class="step-number">02</span>
+                <h3>直接编译</h3>
+                <p>TypeScript 7 生成 ESM、声明文件和对应映射。</p>
+                <code>npm run build:ts</code>
+              </article>
+            </div>
+            <div class="col-12 col-md-6 col-xl-3">
+              <article class="feature-card h-100">
+                <span class="step-number">03</span>
+                <h3>webpack 打包</h3>
+                <p>
+                  <code>ts-loader</code> 使用 TypeScript 6 API 生成独立 bundle。
+                </p>
+                <code>npm run build:webpack</code>
+              </article>
+            </div>
+            <div class="col-12 col-md-6 col-xl-3">
+              <article class="feature-card h-100">
+                <span class="step-number">04</span>
+                <h3>完整验证</h3>
+                <p>依次检查格式、代码质量、类型和两条构建路径。</p>
+                <code>npm run check</code>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="section-block section-muted"
+        id="workflow"
+        aria-labelledby="workflow-title"
+      >
+        <div class="container workflow-grid">
+          <div class="section-heading mb-0">
+            <p class="eyebrow">验证流程</p>
+            <h2 id="workflow-title">从安装到运行</h2>
+            <p>三个命令覆盖依赖安装、仓库健康检查和直接构建结果。</p>
+          </div>
+          <div class="code-window" aria-label="项目验证命令">
+            <div class="code-window-title">Terminal</div>
+            <pre><code><span class="prompt">$</span> pnpm install
+<span class="prompt">$</span> npm run check
+<span class="prompt">$</span> node dist/index.js
+This project is new-typescript-project.</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="section-block"
+        id="compilers"
+        aria-labelledby="compilers-title"
+      >
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">迁移期架构</p>
+            <h2 id="compilers-title">
+              TypeScript 7 CLI 与 TypeScript 6 兼容层
+            </h2>
+          </div>
+          <div class="compiler-grid">
+            <article class="compiler-card">
+              <span class="compiler-label">主编译器</span>
+              <h3>TypeScript 7</h3>
+              <p>
+                <code>@typescript/native</code> 提供
+                <code>tsc</code>。他负责类型检查、监听和直接包构建。
+              </p>
+              <ul>
+                <li>输出 NodeNext ESM</li>
+                <li>生成声明与源码映射</li>
+                <li>保持严格项目配置</li>
+              </ul>
+            </article>
+            <article class="compiler-card">
+              <span class="compiler-label">兼容工具链</span>
+              <h3>TypeScript 6</h3>
+              <p>
+                <code>@typescript/typescript6</code> 提供临时编译器
+                API。webpack、<code>ts-loader</code> 和 typescript-eslint 使用该
+                API。
+              </p>
+              <ul>
+                <li>保留 webpack 构建路径</li>
+                <li>支持 ESLint TypeScript 分析</li>
+                <li>避免 CLI 命令名称冲突</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-block section-cta" aria-labelledby="next-title">
+        <div class="container cta-panel">
+          <div>
+            <p class="eyebrow">继续阅读</p>
+            <h2 id="next-title">查看完整配置和逐步说明</h2>
+            <p>
+              README 包含 TypeScript、webpack、ESLint、Prettier
+              和包验证的完整配置。
+            </p>
+          </div>
+          <div class="cta-actions">
+            <a
+              class="btn btn-light"
+              href="https://github.com/chengchuu/new-typescript-project#readme"
+              >阅读 README</a
+            >
+            <a
+              class="btn btn-outline-light"
+              href="https://github.com/chengchuu/new-typescript-project"
+              >查看仓库</a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <span>new-typescript-project</span>
+        <span>TypeScript 7 · Node.js 22 · ESM</span>
+      </div>
+    </footer>
+
+    <!-- prettier-ignore -->
+    <script type="text/javascript" src="//i.mazey.net/lib/bootstrap/5.3.8/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

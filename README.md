@@ -40,9 +40,22 @@ git init
 ├── eslint.config.js
 ├── .prettierrc.json
 ├── .prettierignore
+├── .github
+│   └── workflows
+│       └── pages.yml
+├── scripts
+│   ├── build-site.mjs
+│   └── validate-site.mjs
+├── site
+│   ├── index.template.html
+│   ├── routes.json
+│   ├── styles.css
+│   └── theme.js
 └── src
     └── index.ts
 ```
+
+`site-dist/` 是忽略的 GitHub Pages 生成目录，不属于 npm 包产物。
 
 ## 安装 TypeScript 和开发工具
 
@@ -413,6 +426,22 @@ This project is new-typescript-project.
 ```bash
 npm pack --dry-run
 ```
+
+## GitHub Pages 教程站点
+
+项目提供独立的[简体中文教程站点](https://chengchuu.github.io/new-typescript-project/)。维护的模板、样式、主题脚本和路由元数据位于 `site/`，构建脚本根据 `package.json.homepage` 生成 `site-dist/`。
+
+构建并验证完整站点产物：
+
+```bash
+npm run build:site
+npm run validate:site
+npm run check:site
+```
+
+`check:site` 会重新生成站点，再检查路由、元数据、本地资源、主题行为和部署工作流。`npm run check` 与 `prepack` 仍只验证 npm 包，因此站点状态不会阻止包构建。
+
+`.github/workflows/pages.yml` 会在推送到 `main` 或手动触发时运行包检查和站点检查。验证通过后，他只上传 `site-dist/`，并通过受保护的 `github-pages` 环境部署。
 
 ## 参考资料
 

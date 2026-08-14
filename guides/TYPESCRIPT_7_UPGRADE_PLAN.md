@@ -2,7 +2,7 @@
 
 ## Status and objective
 
-Status: Planned
+Status: Completed
 
 Upgrade the command-line compiler directly from TypeScript 5.9.3 to 7.0.2, move the package from CommonJS to ECMAScript modules (ESM), and refresh the Chinese tutorial around current TypeScript, webpack, ESLint, and Prettier practices. Preserve the existing console output and both build paths.
 
@@ -13,7 +13,7 @@ TypeScript 7.0 does not expose the compiler API required by `ts-loader` and type
 - Require Node.js 22 or later. Add `"engines": { "node": ">=22" }` and use Node.js 22 for validation.
 - Install dependencies with pnpm and commit `pnpm-lock.yaml`. Do not add a `packageManager` field or another lockfile.
 - Run project tasks through `npm run`; remove unnecessary `npx` calls from package scripts.
-- Install TypeScript 7 as `"@typescript/native": "npm:typescript@7.0.2"` and the compatibility API as `"typescript": "npm:@typescript/typescript6@6.0.3"`.
+- Install TypeScript 7 as `"@typescript/native": "npm:typescript@7.0.2"` and the compatibility API as `"typescript": "npm:@typescript/typescript6@6.0.2"`. The compatibility package exposes a compiler that reports version 6.0.3.
 - Add `"type": "module"`. Keep `dist/index.js` as `main`, but treat the loss of CommonJS `require()` support as an accepted breaking change.
 - Keep `src/index.ts` and its observable message unchanged.
 - Keep webpack and `ts-loader`. Do not replace them with another bundler or transpiler.

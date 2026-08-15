@@ -2,6 +2,15 @@
 
 本文介绍如何创建一个基于 TypeScript 7 的 Node.js 项目。项目使用 ECMAScript 模块 (ESM)，并保留两条构建路径：TypeScript 编译器生成可发布文件，webpack 生成独立 bundle。
 
+- [准备开发环境](#准备开发环境)
+- [安装 TypeScript 和开发工具](#安装-typescript-和开发工具)
+- [配置 TypeScript 7](#配置-typescript-7)
+- [编写并编译 TypeScript](#编写并编译-typescript)
+- [使用 webpack 打包](#使用-webpack-打包)
+- [配置 ESLint](#配置-eslint)
+- [完整验证项目](#完整验证项目)
+- [参考资料](#参考资料)
+
 ## 准备开发环境
 
 请先安装 Node.js 22 或更高版本。
@@ -205,7 +214,11 @@ npm run typecheck
 
 ## 使用 webpack 打包
 
-webpack 通过 `ts-loader` 加载 TypeScript。相关工具会从名为 `typescript` 的依赖中获取 TypeScript 6 兼容 API，但项目配置仍来自同一个 `tsconfig.json`。更多配置方式请参阅 [webpack TypeScript 指南](https://webpack.js.org/guides/typescript/)。
+对于当前 Node.js 项目，TypeScript 7 直接编译已经足够。webpack 是一条可选的构建路径。`tsc` 负责类型检查和 JavaScript 编译，并生成声明文件与源码映射。在本项目的 `NodeNext` 配置下，`tsc` 会保留模块边界。`tsc` 不会把入口及其依赖合并为单个文件。
+
+webpack 会从入口开始分析模块依赖。他会将项目代码和引用的模块合并为 `dist/bundle.js`，从而减少需要交付的文件。对于包含多个模块或第三方依赖的应用，单文件更便于交付。配置相应的 loader 或 plugin 后，webpack 还能处理 CSS、图片等资源。本项目没有启用这些能力。
+
+webpack 通过 `ts-loader` 加载 TypeScript。`ts-loader` 会从名为 `typescript` 的依赖中获取 TypeScript 6 兼容 API。webpack 项目配置仍来自同一个 `tsconfig.json`。更多配置方式请参阅 [webpack TypeScript 指南](https://webpack.js.org/guides/typescript/)。
 
 创建 ESM 格式的 `webpack.config.js`：
 
@@ -246,7 +259,7 @@ export default {
 };
 ```
 
-webpack 会关闭声明文件输出，确保只有 TypeScript 7 写入包声明。
+webpack 构建会关闭声明文件输出。TypeScript 7 直接构建仍是生成包文件和声明文件的主要路径。
 
 添加并运行构建脚本：
 

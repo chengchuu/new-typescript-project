@@ -42,16 +42,23 @@ function createThemeHarness({
 } = {}) {
   const rootAttributes = new Map();
   const metaAttributes = new Map([["content", "#4d8ffb"]]);
-  const selectorListeners = new Map();
+  const themeToggleListeners = new Map();
   const navToggleListeners = new Map();
   const documentListeners = new Map();
   const mediaListeners = [];
   const storedValues = new Map();
   const classNames = new Set();
-  const selector = {
-    value: "",
+  let controlsAvailable = false;
+  const themeToggle = {
+    attributes: new Map([["aria-label", "当前为浅色模式，切换到深色模式"]]),
     addEventListener(type, handler) {
-      selectorListeners.set(type, handler);
+      themeToggleListeners.set(type, handler);
+    },
+    getAttribute(name) {
+      return this.attributes.get(name) ?? null;
+    },
+    setAttribute(name, value) {
+      this.attributes.set(name, value);
     },
   };
   const navToggle = {
@@ -99,7 +106,8 @@ function createThemeHarness({
     },
     querySelector(query) {
       if (query === 'meta[name="theme-color"]') return meta;
-      if (query === "[data-theme-selector]") return selector;
+      if (!controlsAvailable) return null;
+      if (query === "[data-theme-toggle]") return themeToggle;
       if (query === "[data-nav-toggle]") return navToggle;
       if (query === "[data-nav-links]") return navLinks;
       return null;
@@ -128,6 +136,9 @@ function createThemeHarness({
   return {
     context: { document, Set, window },
     documentListeners,
+    enableControls() {
+      controlsAvailable = true;
+    },
     mediaListeners,
     mediaQuery,
     metaAttributes,
@@ -136,8 +147,8 @@ function createThemeHarness({
     navToggleListeners,
     root,
     rootAttributes,
-    selector,
-    selectorListeners,
+    themeToggle,
+    themeToggleListeners,
     storedValues,
     classNames,
   };
@@ -146,17 +157,44 @@ function createThemeHarness({
 function runThemeScenario(themeSource, options) {
   const harness = createThemeHarness(options);
   vm.runInNewContext(themeSource, harness.context, { filename: "theme.js" });
+  harness.earlyThemeState = {
+    colorScheme: harness.root.style.colorScheme,
+    preference: harness.rootAttributes.get("data-theme-preference"),
+    theme: harness.rootAttributes.get("data-bs-theme"),
+    themeColor: harness.metaAttributes.get("content"),
+  };
+  harness.enableControls();
   harness.documentListeners.get("DOMContentLoaded")?.();
   return harness;
 }
 
-function assertThemeState(harness, preference, resolvedTheme, themeColor) {
-  assert.equal(harness.rootAttributes.get("data-theme-preference"), preference);
+function assertThemeState(harness, resolvedTheme, themeColor) {
+  const isDark = resolvedTheme === "dark";
+  const currentLabel = isDark ? "深色" : "浅色";
+  const nextLabel = isDark ? "浅色" : "深色";
+
+  assert.equal(
+    harness.rootAttributes.get("data-theme-preference"),
+    resolvedTheme,
+  );
   assert.equal(harness.rootAttributes.get("data-bs-theme"), resolvedTheme);
   assert.equal(harness.root.style.colorScheme, resolvedTheme);
-  assert.equal(harness.selector.value, preference);
   assert.equal(harness.metaAttributes.get("content"), themeColor);
+  assert.equal(
+    harness.themeToggle.getAttribute("aria-label"),
+    `当前为${currentLabel}模式，切换到${nextLabel}模式`,
+  );
+  assert.equal(harness.themeToggle.getAttribute("aria-pressed"), null);
   assert.ok(harness.classNames.has("site-js"));
+}
+
+function assertEarlyThemeState(harness, resolvedTheme, themeColor) {
+  assert.deepEqual(harness.earlyThemeState, {
+    colorScheme: resolvedTheme,
+    preference: resolvedTheme,
+    theme: resolvedTheme,
+    themeColor,
+  });
 }
 
 const packageJson = await readJson(path.join(projectRoot, "package.json"));
@@ -253,6 +291,11 @@ assert.equal(html.split(bootstrapCssTag).length - 1, 1);
 assert.equal(html.split(bootstrapJavaScriptTag).length - 1, 1);
 assert.equal(html.split(faviconTag).length - 1, 1);
 assert.doesNotMatch(html, /(?:manifest|serviceWorker|og:image)/u);
+assert.equal(countMatches(html, /data-theme-toggle/gu), 1);
+assert.equal(countMatches(html, /data-theme-icon="light"/gu), 1);
+assert.equal(countMatches(html, /data-theme-icon="dark"/gu), 1);
+assert.doesNotMatch(html, /data-theme-selector|bootstrap-icons/gu);
+assert.doesNotMatch(html, /aria-pressed/gu);
 
 const htmlWithoutBootstrapJavaScript = html.replace(bootstrapJavaScriptTag, "");
 assert.match(htmlWithoutBootstrapJavaScript, /<main\s/u);
@@ -361,63 +404,88 @@ assert.ok(styles.includes('[data-bs-theme="dark"]'));
 assert.ok(styles.includes(":focus-visible"));
 assert.ok(styles.includes("overflow-x: auto"));
 assert.ok(styles.includes('.site-js .site-nav-links[data-expanded="true"]'));
+assert.ok(styles.includes(".theme-toggle"));
+assert.ok(
+  styles.includes(
+    '[data-bs-theme="light"] .theme-toggle [data-theme-icon="light"]',
+  ),
+);
+assert.ok(
+  styles.includes(
+    '[data-bs-theme="dark"] .theme-toggle [data-theme-icon="dark"]',
+  ),
+);
 
-const firstVisit = runThemeScenario(themeSource, { prefersDark: true });
-assertThemeState(firstVisit, "system", "dark", "#141414");
+const firstVisitLight = runThemeScenario(themeSource, { prefersDark: false });
+assertThemeState(firstVisitLight, "light", "#ffffff");
+assertEarlyThemeState(firstVisitLight, "light", "#ffffff");
+
+const firstVisitDark = runThemeScenario(themeSource, { prefersDark: true });
+assertThemeState(firstVisitDark, "dark", "#141414");
+assertEarlyThemeState(firstVisitDark, "dark", "#141414");
 
 const storedLight = runThemeScenario(themeSource, {
   storedPreference: "light",
   prefersDark: true,
 });
-assertThemeState(storedLight, "light", "light", "#ffffff");
+assertThemeState(storedLight, "light", "#ffffff");
 
 const storedDark = runThemeScenario(themeSource, {
   storedPreference: "dark",
   prefersDark: false,
 });
-assertThemeState(storedDark, "dark", "dark", "#141414");
+assertThemeState(storedDark, "dark", "#141414");
 
-const storedSystem = runThemeScenario(themeSource, {
+const legacySystem = runThemeScenario(themeSource, {
   storedPreference: "system",
   prefersDark: false,
 });
-assertThemeState(storedSystem, "system", "light", "#ffffff");
-storedSystem.mediaQuery.matches = true;
-storedSystem.mediaListeners[0]();
-assertThemeState(storedSystem, "system", "dark", "#141414");
+assertThemeState(legacySystem, "light", "#ffffff");
+legacySystem.mediaQuery.matches = true;
+legacySystem.mediaListeners[0]();
+assertThemeState(legacySystem, "dark", "#141414");
 
 const invalidStorage = runThemeScenario(themeSource, {
   storedPreference: "sepia",
   prefersDark: false,
 });
-assertThemeState(invalidStorage, "system", "light", "#ffffff");
+assertThemeState(invalidStorage, "light", "#ffffff");
 
 const unavailableStorage = runThemeScenario(themeSource, {
   storageUnavailable: true,
   prefersDark: true,
 });
-assertThemeState(unavailableStorage, "system", "dark", "#141414");
+assertThemeState(unavailableStorage, "dark", "#141414");
 
 const unavailableMedia = runThemeScenario(themeSource, {
   mediaUnavailable: true,
   storedPreference: "system",
 });
-assertThemeState(unavailableMedia, "system", "light", "#ffffff");
+assertThemeState(unavailableMedia, "light", "#ffffff");
 
-storedSystem.selector.value = "light";
-storedSystem.selectorListeners.get("change")({ target: storedSystem.selector });
-assertThemeState(storedSystem, "light", "light", "#ffffff");
+legacySystem.themeToggleListeners.get("click")();
+assertThemeState(legacySystem, "light", "#ffffff");
 assert.equal(
-  storedSystem.storedValues.get("new-typescript-project-theme"),
+  legacySystem.storedValues.get("new-typescript-project-theme"),
   "light",
 );
-storedSystem.mediaQuery.matches = false;
-storedSystem.mediaListeners[0]();
-assertThemeState(storedSystem, "light", "light", "#ffffff");
+legacySystem.mediaQuery.matches = true;
+legacySystem.mediaListeners[0]();
+assertThemeState(legacySystem, "light", "#ffffff");
 
-storedSystem.navToggleListeners.get("click")();
-assert.equal(storedSystem.navToggle.getAttribute("aria-expanded"), "true");
-assert.equal(storedSystem.navLinks.attributes.get("data-expanded"), "true");
+legacySystem.themeToggleListeners.get("click")();
+assertThemeState(legacySystem, "dark", "#141414");
+assert.equal(
+  legacySystem.storedValues.get("new-typescript-project-theme"),
+  "dark",
+);
+
+unavailableStorage.themeToggleListeners.get("click")();
+assertThemeState(unavailableStorage, "light", "#ffffff");
+
+legacySystem.navToggleListeners.get("click")();
+assert.equal(legacySystem.navToggle.getAttribute("aria-expanded"), "true");
+assert.equal(legacySystem.navLinks.attributes.get("data-expanded"), "true");
 
 const actionOrder = [
   "actions/checkout@v7",

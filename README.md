@@ -4,29 +4,21 @@
 
 ## 准备开发环境
 
-请先安装以下工具：
-
-- Node.js 22 或更高版本
-- Git
+请先安装 Node.js 22 或更高版本。
 
 检查本地版本：
 
 ```bash
 node --version
-git --version
 ```
 
-初始化项目和 Git 仓库：
+初始化项目：
 
 ```bash
 mkdir new-typescript-project
 cd new-typescript-project
 npm init --yes
-npm pkg delete scripts.test
-git init
 ```
-
-随后删除占位的 `test` 脚本，因为本项目没有自动化测试套件。
 
 项目完成后的主要目录如下：
 
@@ -34,9 +26,6 @@ git init
 ├── package.json
 ├── tsconfig.json
 ├── webpack.config.js
-├── eslint.config.js
-├── .prettierrc.json
-├── .prettierignore
 └── src
     └── index.ts
 ```
@@ -50,7 +39,23 @@ TypeScript 7 使用 Go 重写为原生编译器，`tsc` 可以直接用于编译
 - `@typescript/native` 是 `typescript@7.0.2` 的别名，负责 `tsc`、直接构建、监听和类型检查。
 - `typescript` 是 `@typescript/typescript6@6.0.2` 的别名，向 webpack、`ts-loader` 和 typescript-eslint 提供兼容 API。该包提供 `tsc6` 命令，编译器版本为 6.0.3。
 
-在 `package.json` 中配置开发依赖：
+安装开发依赖：
+
+```bash
+npm install --save-dev \
+  "@eslint/js@^9.39.5" \
+  "@typescript/native@npm:typescript@7.0.2" \
+  "eslint@^9.39.5" \
+  "eslint-config-prettier@^10.1.8" \
+  "prettier@^3.9.6" \
+  "ts-loader@^9.6.2" \
+  "typescript@npm:@typescript/typescript6@6.0.2" \
+  "typescript-eslint@^8.67.0" \
+  "webpack@^5.109.2" \
+  "webpack-cli@^7.2.2"
+```
+
+安装完成后，`package.json` 会包含以下开发依赖：
 
 ```json
 {
@@ -69,15 +74,7 @@ TypeScript 7 使用 Go 重写为原生编译器，`tsc` 可以直接用于编译
 }
 ```
 
-项目使用 ESLint 9。
-
-安装依赖：
-
-```bash
-npm install
-```
-
-安装完成后，可以直接检查本地编译器版本：
+随后，可以直接检查本地编译器版本：
 
 ```bash
 npm exec -- tsc --version
@@ -135,7 +132,7 @@ Version 6.0.3
 }
 ```
 
-该文件是 TypeScript 两类任务的唯一项目配置来源。`NodeNext` 会结合 `package.json` 中的 `"type": "module"`，让 `dist/index.js` 保持 ESM 格式。项目不提供 CommonJS 构建。部分 Node.js 版本可以通过 `require()` 加载 ESM，但这属于运行时的互操作能力。
+该文件是 TypeScript 两类任务的唯一项目配置来源。`NodeNext` 会结合 `package.json` 中的 `"type": "module"`，让 `dist/index.js` 保持 ESM 格式。
 
 ## 编写并编译 TypeScript
 
@@ -249,7 +246,7 @@ export default {
 };
 ```
 
-配置没有启用 `output.clean`。直接构建和 webpack 共用 `dist/`，自动清理会删除另一条构建路径生成的文件。webpack 也会关闭声明文件输出，确保只有 TypeScript 7 写入包声明。
+webpack 会关闭声明文件输出，确保只有 TypeScript 7 写入包声明。
 
 添加并运行构建脚本：
 
@@ -266,12 +263,6 @@ npm run build:webpack
 node dist/bundle.js
 ```
 
-程序仍会输出：
-
-```plain
-This project is new-typescript-project.
-```
-
 webpack 会同时生成 `dist/bundle.js` 和 `dist/bundle.js.map`。
 
 ## 配置 ESLint
@@ -284,22 +275,14 @@ ESLint 使用 flat config，并组合 `@eslint/js` 和 typescript-eslint 的推�
 npm run lint
 ```
 
-在确认修复范围后，可以自动修复 ESLint 支持的问题：
-
-```bash
-npm run lint:fix
-```
-
 ## 完整验证项目
 
-项目没有自动化测试套件。`check` 是仓库健康检查，他会依次检查格式、代码质量和类型，然后运行两条构建路径：
+`check` 是仓库健康检查，他会依次检查格式、代码质量和类型，然后运行两条构建路径：
 
 ```json
 {
   "scripts": {
-    "clean": "node --eval \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
-    "check": "npm run format:check && npm run lint && npm run typecheck && npm run build:ts && npm run build:webpack",
-    "prepack": "npm run clean && npm run check"
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run build:ts && npm run build:webpack"
   }
 }
 ```
@@ -321,12 +304,6 @@ node dist/bundle.js
 
 ```plain
 This project is new-typescript-project.
-```
-
-`prepack` 会在 `npm pack` 和 `npm publish` 前清理 `dist/`，然后执行完整检查。这样可以重新生成发布文件，并避免打包残留文件。`files` 字段会加入 `dist/` 和 `src/`，确保声明映射可以找到 TypeScript 源文件。npm 也会保留 `package.json` 和 `README.md`。发布前可以检查包内容：
-
-```bash
-npm pack --dry-run
 ```
 
 ## 参考资料

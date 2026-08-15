@@ -3,7 +3,7 @@
 
   const root = document.documentElement;
   const storageKey = "new-typescript-project-theme";
-  const validPreferences = new Set(["system", "light", "dark"]);
+  const validPreferences = new Set(["light", "dark"]);
   const themeColors = {
     light: "#ffffff",
     dark: "#141414",
@@ -14,11 +14,9 @@
   function getStoredPreference() {
     try {
       const storedPreference = window.localStorage?.getItem(storageKey);
-      return validPreferences.has(storedPreference)
-        ? storedPreference
-        : "system";
+      return validPreferences.has(storedPreference) ? storedPreference : null;
     } catch {
-      return "system";
+      return null;
     }
   }
 
@@ -33,7 +31,7 @@
   }
 
   function resolveTheme(preference, colorSchemeQuery) {
-    if (preference === "light" || preference === "dark") {
+    if (validPreferences.has(preference)) {
       return preference;
     }
 
@@ -46,18 +44,24 @@
   function applyTheme() {
     const resolvedTheme = resolveTheme(preference, colorSchemeQuery);
     const themeColor = document.querySelector('meta[name="theme-color"]');
-    const selector = document.querySelector("[data-theme-selector]");
+    const toggle = document.querySelector("[data-theme-toggle]");
+    const isDark = resolvedTheme === "dark";
 
     root.setAttribute("data-bs-theme", resolvedTheme);
-    root.setAttribute("data-theme-preference", preference);
+    root.setAttribute("data-theme-preference", resolvedTheme);
     root.style.colorScheme = resolvedTheme;
 
     if (themeColor) {
       themeColor.setAttribute("content", themeColors[resolvedTheme]);
     }
 
-    if (selector) {
-      selector.value = preference;
+    if (toggle) {
+      const currentLabel = isDark ? "深色" : "浅色";
+      const nextLabel = isDark ? "浅色" : "深色";
+      toggle.setAttribute(
+        "aria-label",
+        `当前为${currentLabel}模式，切换到${nextLabel}模式`,
+      );
     }
   }
 
@@ -70,19 +74,15 @@
   }
 
   function initializeControls() {
-    const selector = document.querySelector("[data-theme-selector]");
+    const toggle = document.querySelector("[data-theme-toggle]");
     const navToggle = document.querySelector("[data-nav-toggle]");
     const navLinks = document.querySelector("[data-nav-links]");
 
-    if (selector) {
-      selector.value = preference;
-      selector.addEventListener("change", (event) => {
-        const nextPreference = validPreferences.has(event.target.value)
-          ? event.target.value
-          : "system";
-
-        preference = nextPreference;
-        persistPreference(nextPreference);
+    if (toggle) {
+      toggle.addEventListener("click", () => {
+        const currentTheme = resolveTheme(preference, colorSchemeQuery);
+        preference = currentTheme === "dark" ? "light" : "dark";
+        persistPreference(preference);
         applyTheme();
       });
     }
@@ -96,7 +96,7 @@
     }
 
     const handleSystemThemeChange = () => {
-      if (preference === "system") {
+      if (preference === null) {
         applyTheme();
       }
     };

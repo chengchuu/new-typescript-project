@@ -153,14 +153,37 @@ select:focus-visible {
   border-radius: 0.6rem;
 }
 
-.theme-control {
-  min-width: 7rem;
+.theme-toggle {
+  display: inline-grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  color: var(--site-text);
+  background: var(--site-card);
+  border: 1px solid var(--site-border);
+  border-radius: 50%;
+  place-items: center;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
 }
 
-.theme-control .form-select {
-  color: var(--site-text);
-  background-color: var(--site-card);
-  border-color: var(--site-border);
+.theme-toggle:hover {
+  color: var(--site-blue-strong);
+  background: var(--site-blue-soft);
+  border-color: var(--site-blue);
+}
+
+.theme-toggle svg {
+  display: none;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+[data-bs-theme="light"] .theme-toggle [data-theme-icon="light"],
+[data-bs-theme="dark"] .theme-toggle [data-theme-icon="dark"] {
+  display: block;
 }
 
 .hero-section {

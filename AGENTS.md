@@ -7,7 +7,6 @@ This repository is a minimal TypeScript ESM example rather than a multi-componen
 - `src/index.ts` is the only maintained runtime source and application entry point. Keep its observable console message unchanged unless a task explicitly changes runtime behavior.
 - `dist/` contains ignored output shared by the direct TypeScript and webpack builds. Do not edit or commit it, and do not enable webpack output cleaning.
 - `package.json` declares the ESM package contract, Node.js 22 minimum, dependency versions, task scripts, JavaScript entry point (`dist/index.js`), declaration entry point (`dist/index.d.ts`), and published `dist/` plus `src/` files. No CommonJS build is provided.
-- `package-lock.json` is committed. Use npm to install dependencies, do not create another lockfile, and do not add a `packageManager` field.
 - `README.md` is a reproducible Simplified Chinese tutorial for the current TypeScript, webpack, ESLint, and Prettier setup.
 - `site/` contains the maintained Simplified Chinese Pages template, route metadata, semantic styles, and theme behavior. Keep local asset references relative to the project subpath.
 - `scripts/build-site.mjs` generates the complete ignored `site-dist/` artifact. `scripts/validate-site.mjs` checks the artifact, theme scenarios, and deployment contract. Do not edit or commit `site-dist/`.
@@ -28,7 +27,7 @@ Both compiler paths load `tsconfig.json` as the single project source of truth. 
 ## Tooling configuration
 
 - `webpack.config.js` is ESM. It loads `.ts` and `.tsx` files through `ts-loader`, produces `dist/bundle.js` and its source map, disables TypeScript 6 declaration emission, and deliberately leaves existing `dist/` files intact.
-- `eslint.config.js` is ESM flat config based on ESLint 9, `@eslint/js`, `typescript-eslint`, and `eslint-config-prettier`. ESLint 9 preserves the declared support for every Node.js 22 release; ESLint 10 requires Node.js 22.13.0 or newer. The config applies recommended JavaScript and TypeScript rules, permits the intentional console output, and ignores dependencies and generated output.
+- `eslint.config.js` is ESM flat config based on ESLint 9, `@eslint/js`, `typescript-eslint`, and `eslint-config-prettier`. ESLint 9 preserves the declared Node.js 22 support range. The config applies recommended JavaScript and TypeScript rules, permits the intentional console output, and ignores dependencies and generated output.
 - `.prettierrc.json` provides the minimal Prettier configuration. `.prettierignore` excludes dependencies and generated output.
 - ESLint checks code quality and Prettier checks formatting. Keep these responsibilities separate.
 

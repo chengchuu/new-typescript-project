@@ -43,7 +43,9 @@ git init
 
 ## 安装 TypeScript 和开发工具
 
-TypeScript 7 提供原生 `tsc` 命令，但暂时不提供 `ts-loader` 和 typescript-eslint 所需的编译器 API。因此，本项目按照 [TypeScript 7.0 发布公告](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/) 的建议并行安装两个版本：
+TypeScript 7 使用 Go 重写为原生编译器，`tsc` 可以直接用于编译和类型检查。但是，7.0 暂未提供编程 API。`ts-loader` 和 typescript-eslint 等工具仍需通过该 API 调用编译器，因此暂时依赖 TypeScript 6。为帮助项目平稳过渡，TypeScript 团队发布了 `@typescript/typescript6` 兼容包，并建议让 TypeScript 7 的 `tsc` 与依赖 TypeScript 6 API 的工具并行运行。具体背景参阅 [TypeScript 7.0 发布公告](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)。
+
+本项目据此并行安装两个版本：
 
 - `@typescript/native` 是 `typescript@7.0.2` 的别名，负责 `tsc`、直接构建、监听和类型检查。
 - `typescript` 是 `@typescript/typescript6@6.0.2` 的别名，向 webpack、`ts-loader` 和 typescript-eslint 提供兼容 API。该包提供 `tsc6` 命令，编译器版本为 6.0.3。

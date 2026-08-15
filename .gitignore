@@ -4,6 +4,7 @@ server/
 .DS_Store
 node_modules/
 dist/
+site-dist/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

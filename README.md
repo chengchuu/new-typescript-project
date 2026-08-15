@@ -1,53 +1,167 @@
-# 从零到一: 创建一个新的 TypeScript 项目
+# 从零到一：创建一个新的 TypeScript 项目
 
-## 一、初始化 npm 项目
+本文介绍如何创建一个基于 TypeScript 7 的 Node.js 项目。项目使用 ECMAScript 模块 (ESM)，并保留两条构建路径：TypeScript 编译器生成可发布文件，webpack 生成独立 bundle。
 
-npm:
+## 准备开发环境
+
+请先安装以下工具：
+
+- Node.js 22 或更高版本
+- pnpm
+- Git
+
+检查本地版本：
 
 ```bash
-npm init
+node --version
+pnpm --version
+git --version
 ```
 
-Git:
+初始化项目和 Git 仓库：
 
 ```bash
+mkdir new-typescript-project
+cd new-typescript-project
+npm init --yes
+npm pkg delete scripts.test
 git init
 ```
 
-## 二、安装 TypeScript
+`npm init --yes` 不会添加 `packageManager` 字段。随后删除占位的 `test` 脚本，因为本项目没有自动化测试套件。
 
-```bash
-npm i typescript -D
-```
-
-查看版本:
-
-```bash
-npx tsc --version
-```
-
-## 三、初始化配置文件 `tsconfig.json`
-
-```bash
-npx tsc --init
-```
-
-## 四、编译 `.ts`
-
-新建 `index.ts` 文件。
-
-项目目录:
+项目完成后的主要目录如下：
 
 ```plain
 ├── package.json
+├── pnpm-lock.yaml
 ├── tsconfig.json
+├── webpack.config.js
+├── eslint.config.js
+├── .prettierrc.json
+├── .prettierignore
+├── .github
+│   └── workflows
+│       └── pages.yml
+├── scripts
+│   ├── build-site.mjs
+│   └── validate-site.mjs
+├── site
+│   ├── index.template.html
+│   ├── routes.json
+│   ├── styles.css
+│   └── theme.js
 └── src
     └── index.ts
 ```
 
-文件 `index.ts`:
+`site-dist/` 是忽略的 GitHub Pages 生成目录，不属于 npm 包产物。
 
-```javascript
+## 安装 TypeScript 和开发工具
+
+TypeScript 7 提供原生 `tsc` 命令，但暂时不提供 `ts-loader` 和 typescript-eslint 所需的编译器 API。因此，本项目按照 [TypeScript 7.0 发布公告](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/) 的建议并行安装两个版本：
+
+- `@typescript/native` 是 `typescript@7.0.2` 的别名，负责 `tsc`、直接构建、监听和类型检查。
+- `typescript` 是 `@typescript/typescript6@6.0.2` 的别名，向 webpack、`ts-loader` 和 typescript-eslint 提供兼容 API。该包提供 `tsc6` 命令，编译器版本为 6.0.3。
+
+在 `package.json` 中配置开发依赖：
+
+```json
+{
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@typescript/native": "npm:typescript@7.0.2",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.6",
+    "ts-loader": "^9.6.2",
+    "typescript": "npm:@typescript/typescript6@6.0.2",
+    "typescript-eslint": "^8.67.0",
+    "webpack": "^5.109.2",
+    "webpack-cli": "^7.2.2"
+  }
+}
+```
+
+项目使用 ESLint 9，以覆盖全部 Node.js 22 版本。ESLint 10 要求 Node.js 22.13.0 或更高版本，与这里的引擎范围不一致。
+
+安装依赖并生成 `pnpm-lock.yaml`：
+
+```bash
+pnpm install
+```
+
+项目提交 `pnpm-lock.yaml`。在需要严格复现依赖的环境中，可以执行：
+
+```bash
+pnpm install --frozen-lockfile
+```
+
+安装完成后，可以直接检查本地编译器版本：
+
+```bash
+npm exec -- tsc --version
+npm exec -- tsc6 --version
+```
+
+预期输出：
+
+```plain
+Version 7.0.2
+Version 6.0.3
+```
+
+## 配置 TypeScript 7
+
+在 `package.json` 中声明 ESM 和 Node.js 版本要求：
+
+```json
+{
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist", "src"],
+  "engines": {
+    "node": ">=22"
+  }
+}
+```
+
+创建 `tsconfig.json`：
+
+```json
+{
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "module": "NodeNext",
+    "target": "ES2023",
+    "types": [],
+    "sourceMap": true,
+    "inlineSources": true,
+    "declaration": true,
+    "declarationMap": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "strict": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "noUncheckedSideEffectImports": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
+```
+
+该文件是 TypeScript 两类任务的唯一项目配置来源。`NodeNext` 会结合 `package.json` 中的 `"type": "module"`，让 `dist/index.js` 保持 ESM 格式。项目不提供 CommonJS 构建。部分 Node.js 版本可以通过 `require()` 加载 ESM，但这属于运行时的互操作能力。
+
+## 编写并编译 TypeScript
+
+创建 `src/index.ts`：
+
+```typescript
 const ProjectName = "new-typescript-project";
 
 function say(): string {
@@ -57,189 +171,284 @@ function say(): string {
 console.log(say());
 ```
 
-编译:
+在 `package.json` 中定义直接构建、监听和类型检查脚本：
 
-```bash
-npx tsc src/index.ts --outDir dist
+```json
+{
+  "scripts": {
+    "build:ts": "tsc --project tsconfig.json",
+    "watch": "tsc --project tsconfig.json --watch",
+    "typecheck": "tsc --project tsconfig.json --noEmit"
+  }
+}
 ```
 
-结果:
+运行直接构建：
 
+```bash
+npm run build:ts
+```
+
+TypeScript 7 会生成 `dist/index.js`、声明文件、声明映射和源码映射。`dist/index.js` 的内容如下：
+
+<!-- prettier-ignore -->
 ```javascript
-var ProjectName = "new-typescript-project";
+const ProjectName = "new-typescript-project";
 function say() {
-    return "This project is ".concat(ProjectName, ".");
+    return `This project is ${ProjectName}.`;
 }
 console.log(say());
+export {};
+//# sourceMappingURL=index.js.map
 ```
 
-监听文件变化:
+运行编译结果：
 
 ```bash
-npx tsc --watch src/index.ts --outDir dist
+node dist/index.js
 ```
 
-## 五、使用 webpack 打包
+输出如下：
 
-### 5.1 安装 webpack
+```plain
+This project is new-typescript-project.
+```
+
+开发期间可以启动监听模式：
 
 ```bash
-npm install webpack webpack-cli -D
+npm run watch
 ```
 
-### 5.2 安装 TypeScript 加载器 `ts-loader`
+只检查类型而不写入文件：
 
 ```bash
-npm install ts-loader -D
+npm run typecheck
 ```
 
-### 5.3 配置 `webpack.config.js`
+## 使用 webpack 打包
+
+webpack 通过 `ts-loader` 加载 TypeScript。相关工具会从名为 `typescript` 的依赖中获取 TypeScript 6 兼容 API，但项目配置仍来自同一个 `tsconfig.json`。更多配置方式请参阅 [webpack TypeScript 指南](https://webpack.js.org/guides/typescript/)。
+
+创建 ESM 格式的 `webpack.config.js`：
 
 ```javascript
-const path = require('path');
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-module.exports = {
-  entry: './src/index.ts',
+const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
+
+export default {
+  mode: "production",
+  entry: "./src/index.ts",
+  devtool: "source-map",
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    filename: "bundle.js",
+    path: path.resolve(currentDirectory, "dist"),
   },
-  module:{
-    rules:[
+  module: {
+    rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/
-      }
-    ]
+        use: {
+          loader: "ts-loader",
+          options: {
+            compilerOptions: {
+              declaration: false,
+              declarationMap: false,
+            },
+          },
+        },
+        exclude: /node_modules/,
+      },
+    ],
   },
   resolve: {
-    extensions: ['.ts', '.tsx']
-  }
+    extensions: [".ts", ".tsx"],
+  },
 };
 ```
 
-### 5.4 打包
+配置没有启用 `output.clean`。直接构建和 webpack 共用 `dist/`，自动清理会删除另一条构建路径生成的文件。webpack 也会关闭声明文件输出，确保只有 TypeScript 7 写入包声明。
 
-```bash
-npx webpack --config webpack.config.js
-```
+添加并运行构建脚本：
 
-结果:
-
-```javascript
-(()=>{"use strict";console.log("This project is new-typescript-project.")})();
-```
-
-## 六、使用 ESLint 规范代码
-
-### 6.1 安装依赖
-
-```bash
-npm install eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-prettier -D
-```
-
-### 6.2 新增配置文件 `eslint.config.cjs`
-
-```bash
-touch eslint.config.cjs
-```
-
-```javascript
-const tsPlugin = require('@typescript-eslint/eslint-plugin');
-const tsParser = require('@typescript-eslint/parser');
-const prettierPlugin = require('eslint-plugin-prettier');
-const tsRecommendedRules =
-  tsPlugin && tsPlugin.configs && tsPlugin.configs.recommended
-    ? tsPlugin.configs.recommended.rules
-    : {};
-
-module.exports = [
-  {
-    ignores: ['node_modules/**', 'dist/**', 'build/**', '*.min.js', '.git/**']
-  },
-  {
-    files: ['**/*.ts', '**/*.tsx'],
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-        project: ['./tsconfig.json'],
-        tsconfigRootDir: __dirname
-      }
-    },
-    plugins: {
-      '@typescript-eslint': tsPlugin,
-      prettier: prettierPlugin
-    },
-    rules: {
-      ...tsRecommendedRules,
-      'prettier/prettier': 'error',
-      'no-console': 'off',
-      '@typescript-eslint/no-inferrable-types': 'off'
-    }
-  },
-  {
-    files: ['**/*.js', '**/*.jsx'],
-    languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module'
-    },
-    rules: {
-      'no-unused-vars': 'warn'
-    }
+```json
+{
+  "scripts": {
+    "build:webpack": "webpack --config webpack.config.js"
   }
-];
+}
 ```
 
-### 6.3 `package.json` 中添加检测脚本
+```bash
+npm run build:webpack
+node dist/bundle.js
+```
+
+程序仍会输出：
 
 ```plain
-"lint": "eslint src/index.ts --ext .ts"
+This project is new-typescript-project.
 ```
 
-### 6.4 运行检测
+webpack 会同时生成 `dist/bundle.js` 和 `dist/bundle.js.map`。
+
+## 配置 ESLint
+
+ESLint 使用 flat config。配置组合 `@eslint/js` 和 typescript-eslint 的推荐规则，并在最后应用 `eslint-config-prettier`，避免代码质量规则和格式规则冲突。格式检查由 Prettier 单独完成。有关基础结构，请参阅 [typescript-eslint 入门指南](https://typescript-eslint.io/getting-started/)。
+
+创建 `eslint.config.js`：
+
+```javascript
+import eslint from "@eslint/js";
+import eslintConfigPrettier from "eslint-config-prettier";
+import tseslint from "typescript-eslint";
+
+export default tseslint.config(
+  {
+    ignores: ["node_modules/**", "dist/**", "build/**", "*.min.js", ".git/**"],
+  },
+  eslint.configs.recommended,
+  tseslint.configs.recommended,
+  {
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      "no-console": "off",
+      "@typescript-eslint/no-inferrable-types": "off",
+    },
+  },
+  eslintConfigPrettier,
+);
+```
+
+添加检查和修复脚本：
+
+```json
+{
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  }
+}
+```
+
+运行检查：
 
 ```bash
 npm run lint
 ```
 
-报错示例:
+在确认修复范围后，可以自动修复 ESLint 支持的问题：
 
-```javascript
-const ProjectName = "new-typescript-project"
+```bash
+npm run lint:fix
 ```
+
+## 配置 Prettier
+
+Prettier 负责格式化，ESLint 负责代码质量。此方式符合 [Prettier 与代码检查工具集成指南](https://prettier.io/docs/next/integrating-with-linters.html) 的职责划分。
+
+创建最小配置 `.prettierrc.json`：
+
+```json
+{}
+```
+
+创建 `.prettierignore`，排除依赖和生成文件：
 
 ```plain
-1:45  error  Insert `;`  prettier/prettier
+dist/
+node_modules/
+pnpm-lock.yaml
 ```
 
-修改相应代码:
+`pnpm-lock.yaml` 由 pnpm 管理，因此不交给 Prettier 重写。
+
+添加格式化脚本：
+
+```json
+{
+  "scripts": {
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
+  }
+}
+```
+
+检查格式：
+
+```bash
+npm run format:check
+```
+
+需要写入格式化结果时，运行：
+
+```bash
+npm run format
+```
+
+## 完整验证项目
+
+项目没有自动化测试套件。`check` 是仓库健康检查，他会依次检查格式、代码质量和类型，然后运行两条构建路径：
+
+```json
+{
+  "scripts": {
+    "clean": "node --eval \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run build:ts && npm run build:webpack",
+    "prepack": "npm run clean && npm run check"
+  }
+}
+```
+
+执行完整检查：
+
+```bash
+npm run check
+```
+
+构建完成后，分别运行两个文件并比较输出：
+
+```bash
+node dist/index.js
+node dist/bundle.js
+```
+
+两个命令都应输出：
 
 ```plain
-- const ProjectName = "new-typescript-project"
-+ const ProjectName = "new-typescript-project";
+This project is new-typescript-project.
 ```
 
-再次运行通过！
+`prepack` 会在 `npm pack` 和 `npm publish` 前清理 `dist/`，然后执行完整检查。这样可以重新生成发布文件，并避免打包残留文件。`files` 字段会加入 `dist/` 和 `src/`，确保声明映射可以找到 TypeScript 源文件。npm 也会保留 `package.json` 和 `README.md`。发布前可以检查包内容：
 
-### 6.5 自动修复不规范的代码
-
-脚本添加 `--fix` 选项:
-
-```plain
-"lint:fix": "eslint src/index.ts --ext .ts --fix"
+```bash
+npm pack --dry-run
 ```
 
-### 6.6 添加更多扩展文件
+## GitHub Pages 教程站点
 
-```plain
-"lint:fix": "eslint src/index.ts --ext .ts,.tsx --fix"
+项目提供独立的[简体中文教程站点](https://chengchuu.github.io/new-typescript-project/)。维护的模板、样式、主题脚本和路由元数据位于 `site/`，构建脚本根据 `package.json.homepage` 生成 `site-dist/`。
+
+构建并验证完整站点产物：
+
+```bash
+npm run build:site
+npm run validate:site
+npm run check:site
 ```
 
-## 附录
+`check:site` 会重新生成站点，再检查路由、元数据、本地资源、主题行为和部署工作流。`npm run check` 与 `prepack` 仍只验证 npm 包，因此站点状态不会阻止包构建。
 
-案例: [GitHub: new-typescript-project](https://github.com/chengchuu/new-typescript-project)
+`.github/workflows/pages.yml` 会在推送到 `main` 或手动触发时运行包检查和站点检查。验证通过后，他只上传 `site-dist/`，并通过受保护的 `github-pages` 环境部署。
 
-本文章首次编辑于 2020-08-18，最近更新于 2025-10-27。项目代码在 Node.js 16.x 上已测试可稳定运行。
+## 参考资料
+
+- [TypeScript 7.0 发布公告](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)
+- [webpack TypeScript 指南](https://webpack.js.org/guides/typescript/)
+- [typescript-eslint 入门指南](https://typescript-eslint.io/getting-started/)
+- [Prettier 与代码检查工具集成指南](https://prettier.io/docs/next/integrating-with-linters.html)
+- [GitHub：new-typescript-project](https://github.com/chengchuu/new-typescript-project)
+
+本文章首次编辑于 2020-08-18，最近更新于 2026-08-14。

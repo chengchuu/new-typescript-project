@@ -2,24 +2,43 @@
   "name": "new-typescript-project",
   "version": "1.0.1",
   "description": "Create a new TypeScript project.",
+  "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.46.2",
-    "@typescript-eslint/parser": "^8.46.2",
-    "eslint": "^9.38.0",
-    "eslint-plugin-prettier": "^5.5.4",
-    "ts-loader": "^9.5.4",
-    "typescript": "^5.9.3",
-    "webpack": "^5.102.1",
-    "webpack-cli": "^6.0.1"
+    "@eslint/js": "^9.39.5",
+    "@typescript/native": "npm:typescript@7.0.2",
+    "eslint": "^9.39.5",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.9.6",
+    "ts-loader": "^9.6.2",
+    "typescript": "npm:@typescript/typescript6@6.0.2",
+    "typescript-eslint": "^8.67.0",
+    "webpack": "^5.109.2",
+    "webpack-cli": "^7.2.2"
   },
   "scripts": {
-    "build:ts": "npx tsc src/index.ts --outDir dist",
-    "build:webpack": "npx webpack --config webpack.config.js",
-    "watch": "npx tsc --watch src/index.ts --outDir dist",
-    "lint": "eslint src/index.ts --ext .ts,.tsx",
-    "lint:fix": "eslint src/index.ts --ext .ts,.tsx --fix",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "clean": "node --eval \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build:ts": "tsc --project tsconfig.json",
+    "build:webpack": "webpack --config webpack.config.js",
+    "build:site": "node scripts/build-site.mjs",
+    "validate:site": "node scripts/validate-site.mjs",
+    "check:site": "npm run build:site && npm run validate:site",
+    "watch": "tsc --project tsconfig.json --watch",
+    "typecheck": "tsc --project tsconfig.json --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm run build:ts && npm run build:webpack",
+    "prepack": "npm run clean && npm run check"
   },
   "repository": {
     "type": "git",
@@ -30,5 +49,5 @@
   "bugs": {
     "url": "https://github.com/chengchuu/new-typescript-project/issues"
   },
-  "homepage": "https://github.com/chengchuu/new-typescript-project#readme"
+  "homepage": "https://chengchuu.github.io/new-typescript-project/"
 }

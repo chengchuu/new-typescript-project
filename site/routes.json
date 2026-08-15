@@ -1,0 +1,9 @@
+[
+  {
+    "path": "/new-typescript-project/",
+    "title": "TypeScript 7 项目教程 | new-typescript-project",
+    "description": "使用 Node.js 22、ESM、webpack、ESLint 和 Prettier 构建并验证 TypeScript 7 项目。",
+    "canonical": "https://chengchuu.github.io/new-typescript-project/",
+    "index": true
+  }
+]

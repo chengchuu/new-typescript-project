@@ -7,14 +7,12 @@
 请先安装以下工具：
 
 - Node.js 22 或更高版本
-- pnpm
 - Git
 
 检查本地版本：
 
 ```bash
 node --version
-pnpm --version
 git --version
 ```
 
@@ -28,38 +26,26 @@ npm pkg delete scripts.test
 git init
 ```
 
-`npm init --yes` 不会添加 `packageManager` 字段。随后删除占位的 `test` 脚本，因为本项目没有自动化测试套件。
+随后删除占位的 `test` 脚本，因为本项目没有自动化测试套件。
 
 项目完成后的主要目录如下：
 
 ```plain
 ├── package.json
-├── pnpm-lock.yaml
 ├── tsconfig.json
 ├── webpack.config.js
 ├── eslint.config.js
 ├── .prettierrc.json
 ├── .prettierignore
-├── .github
-│   └── workflows
-│       └── pages.yml
-├── scripts
-│   ├── build-site.mjs
-│   └── validate-site.mjs
-├── site
-│   ├── index.template.html
-│   ├── routes.json
-│   ├── styles.css
-│   └── theme.js
 └── src
     └── index.ts
 ```
 
-`site-dist/` 是忽略的 GitHub Pages 生成目录，不属于 npm 包产物。
-
 ## 安装 TypeScript 和开发工具
 
-TypeScript 7 提供原生 `tsc` 命令，但暂时不提供 `ts-loader` 和 typescript-eslint 所需的编译器 API。因此，本项目按照 [TypeScript 7.0 发布公告](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/) 的建议并行安装两个版本：
+TypeScript 7 使用 Go 重写为原生编译器，`tsc` 可以直接用于编译和类型检查。但是，7.0 暂未提供编程 API。`ts-loader` 和 typescript-eslint 等工具仍需通过该 API 调用编译器，因此暂时依赖 TypeScript 6。为帮助项目平稳过渡，TypeScript 团队发布了 `@typescript/typescript6` 兼容包，并建议让 TypeScript 7 的 `tsc` 与依赖 TypeScript 6 API 的工具并行运行。具体背景参阅 [TypeScript 7.0 发布公告](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)。
+
+本项目据此并行安装两个版本：
 
 - `@typescript/native` 是 `typescript@7.0.2` 的别名，负责 `tsc`、直接构建、监听和类型检查。
 - `typescript` 是 `@typescript/typescript6@6.0.2` 的别名，向 webpack、`ts-loader` 和 typescript-eslint 提供兼容 API。该包提供 `tsc6` 命令，编译器版本为 6.0.3。
@@ -83,18 +69,12 @@ TypeScript 7 提供原生 `tsc` 命令，但暂时不提供 `ts-loader` 和 type
 }
 ```
 
-项目使用 ESLint 9，以覆盖全部 Node.js 22 版本。ESLint 10 要求 Node.js 22.13.0 或更高版本，与这里的引擎范围不一致。
+项目使用 ESLint 9。
 
-安装依赖并生成 `pnpm-lock.yaml`：
-
-```bash
-pnpm install
-```
-
-项目提交 `pnpm-lock.yaml`。在需要严格复现依赖的环境中，可以执行：
+安装依赖：
 
 ```bash
-pnpm install --frozen-lockfile
+npm install
 ```
 
 安装完成后，可以直接检查本地编译器版本：
@@ -296,42 +276,7 @@ webpack 会同时生成 `dist/bundle.js` 和 `dist/bundle.js.map`。
 
 ## 配置 ESLint
 
-ESLint 使用 flat config。配置组合 `@eslint/js` 和 typescript-eslint 的推荐规则，并在最后应用 `eslint-config-prettier`，避免代码质量规则和格式规则冲突。格式检查由 Prettier 单独完成。有关基础结构，请参阅 [typescript-eslint 入门指南](https://typescript-eslint.io/getting-started/)。
-
-创建 `eslint.config.js`：
-
-```javascript
-import eslint from "@eslint/js";
-import eslintConfigPrettier from "eslint-config-prettier";
-import tseslint from "typescript-eslint";
-
-export default tseslint.config(
-  {
-    ignores: ["node_modules/**", "dist/**", "build/**", "*.min.js", ".git/**"],
-  },
-  eslint.configs.recommended,
-  tseslint.configs.recommended,
-  {
-    files: ["**/*.{ts,tsx}"],
-    rules: {
-      "no-console": "off",
-      "@typescript-eslint/no-inferrable-types": "off",
-    },
-  },
-  eslintConfigPrettier,
-);
-```
-
-添加检查和修复脚本：
-
-```json
-{
-  "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
-  }
-}
-```
+ESLint 使用 flat config，并组合 `@eslint/js` 和 typescript-eslint 的推荐规则。有关配置方式，请参阅 [typescript-eslint 入门指南](https://typescript-eslint.io/getting-started/)。
 
 运行检查：
 
@@ -343,49 +288,6 @@ npm run lint
 
 ```bash
 npm run lint:fix
-```
-
-## 配置 Prettier
-
-Prettier 负责格式化，ESLint 负责代码质量。此方式符合 [Prettier 与代码检查工具集成指南](https://prettier.io/docs/next/integrating-with-linters.html) 的职责划分。
-
-创建最小配置 `.prettierrc.json`：
-
-```json
-{}
-```
-
-创建 `.prettierignore`，排除依赖和生成文件：
-
-```plain
-dist/
-node_modules/
-pnpm-lock.yaml
-```
-
-`pnpm-lock.yaml` 由 pnpm 管理，因此不交给 Prettier 重写。
-
-添加格式化脚本：
-
-```json
-{
-  "scripts": {
-    "format": "prettier . --write",
-    "format:check": "prettier . --check"
-  }
-}
-```
-
-检查格式：
-
-```bash
-npm run format:check
-```
-
-需要写入格式化结果时，运行：
-
-```bash
-npm run format
 ```
 
 ## 完整验证项目
@@ -427,28 +329,11 @@ This project is new-typescript-project.
 npm pack --dry-run
 ```
 
-## GitHub Pages 教程站点
-
-项目提供独立的[简体中文教程站点](https://chengchuu.github.io/new-typescript-project/)。维护的模板、样式、主题脚本和路由元数据位于 `site/`，构建脚本根据 `package.json.homepage` 生成 `site-dist/`。
-
-构建并验证完整站点产物：
-
-```bash
-npm run build:site
-npm run validate:site
-npm run check:site
-```
-
-`check:site` 会重新生成站点，再检查路由、元数据、本地资源、主题行为和部署工作流。`npm run check` 与 `prepack` 仍只验证 npm 包，因此站点状态不会阻止包构建。
-
-`.github/workflows/pages.yml` 会在推送到 `main` 或手动触发时运行包检查和站点检查。验证通过后，他只上传 `site-dist/`，并通过受保护的 `github-pages` 环境部署。
-
 ## 参考资料
 
 - [TypeScript 7.0 发布公告](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)
 - [webpack TypeScript 指南](https://webpack.js.org/guides/typescript/)
 - [typescript-eslint 入门指南](https://typescript-eslint.io/getting-started/)
-- [Prettier 与代码检查工具集成指南](https://prettier.io/docs/next/integrating-with-linters.html)
 - [GitHub：new-typescript-project](https://github.com/chengchuu/new-typescript-project)
 
-本文章首次编辑于 2020-08-18，最近更新于 2026-08-14。
+本文章首次编辑于 2020-08-18，最近更新于 2026-08-15。

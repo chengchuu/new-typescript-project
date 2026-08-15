@@ -11,7 +11,7 @@ TypeScript 7.0 does not expose the compiler API required by `ts-loader` and type
 ## Locked decisions
 
 - Require Node.js 22 or later. Add `"engines": { "node": ">=22" }` and use Node.js 22 for validation.
-- Install dependencies with pnpm and commit `pnpm-lock.yaml`. Do not add a `packageManager` field or another lockfile.
+- Install dependencies with npm. Do not add a `packageManager` field.
 - Run project tasks through `npm run`; remove unnecessary `npx` calls from package scripts.
 - Install TypeScript 7 as `"@typescript/native": "npm:typescript@7.0.2"` and the compatibility API as `"typescript": "npm:@typescript/typescript6@6.0.2"`. The compatibility package exposes a compiler that reports version 6.0.3.
 - Add `"type": "module"`. Keep `dist/index.js` as `main`, but treat the loss of CommonJS `require()` support as an accepted breaking change.
@@ -47,15 +47,15 @@ Add a minimal Prettier configuration and ignore generated output. Keep formattin
 
 ### Rewrite the README and contributor guide
 
-Rewrite `README.md` as a reproducible Simplified Chinese tutorial. Cover Node.js 22 and pnpm prerequisites, project initialization, dependency installation, TypeScript 7 configuration, compilation, watch mode, webpack, ESLint, Prettier, and complete validation. Use pnpm only for install commands and `npm run` for repository scripts.
+Rewrite `README.md` as a reproducible Simplified Chinese tutorial. Cover Node.js 22, project initialization, dependency installation, TypeScript 7 configuration, compilation, watch mode, webpack, ESLint, Prettier, and complete validation. Use npm for dependency installation and repository scripts without turning the TypeScript tutorial into a package-manager guide.
 
 Explain the TypeScript 7 and TypeScript 6 sidecar roles before the installation command. Link to the official TypeScript 7 announcement and current webpack, typescript-eslint, and Prettier guidance. Replace the ES5-era compiled-code example with output copied from the validated TypeScript 7 build. Remove the Node.js 16 claim and update the article date only after all checks pass.
 
-Update `AGENTS.md` to describe the ESM contract, committed pnpm lockfile, project-based compiler flow, separate lint and formatting checks, compatibility compiler, and new `npm run check` contract.
+Update `AGENTS.md` to describe the ESM contract, project-based compiler flow, separate lint and formatting checks, compatibility compiler, and new `npm run check` contract.
 
 ## Validation and acceptance criteria
 
-1. Run `pnpm install`, then run `pnpm install --frozen-lockfile` to prove lockfile consistency.
+1. Run `npm install` to install the declared dependencies.
 2. Confirm `tsc --version` reports `7.0.2` and `tsc6 --version` reports `6.0.3` through the local toolchain.
 3. Run `npm run format:check`, `npm run lint`, and `npm run typecheck`.
 4. Run `npm run build:ts`, then execute `node dist/index.js` and verify the existing message.
@@ -65,7 +65,7 @@ Update `AGENTS.md` to describe the ESM contract, committed pnpm lockfile, projec
 8. Compare the README’s commands, configuration, and output snippets with the validated files.
 9. Run `git diff --check` and inspect `git status --short`.
 
-The migration is complete only when the TypeScript 7 CLI, TypeScript 6 compatibility tools, direct ESM output, webpack bundle, lint configuration, formatting checks, documentation, and lockfile all pass together on Node.js 22.
+The migration is complete only when the TypeScript 7 CLI, TypeScript 6 compatibility tools, direct ESM output, webpack bundle, lint configuration, formatting checks, and documentation all pass together on Node.js 22.
 
 ## Risks and boundaries
 

@@ -25,7 +25,7 @@ Build one canonical route, `/new-typescript-project/`, containing:
 - a responsive navbar and hero;
 - an overview of TypeScript 7, Node.js 22, ESM, webpack, ESLint, and Prettier;
 - cards for environment setup, compilation, bundling, and validation;
-- the verified `pnpm install`, `npm run check`, and `node dist/index.js` workflow;
+- the verified `npm install`, `npm run check`, and `node dist/index.js` workflow;
 - an explanation of the TypeScript 7 CLI and TypeScript 6 compatibility sidecar;
 - links to the repository and complete README.
 
@@ -87,7 +87,7 @@ Keep build and deploy jobs separate. The deploy job must depend on the validated
 
 ## Validation and acceptance criteria
 
-1. Run `pnpm install`, `npm run check`, and `npm run check:site` locally on Node.js 22.
+1. Run `npm install`, `npm run check`, and `npm run check:site` locally on Node.js 22.
 2. Confirm `site-dist/` contains `index.html`, `robots.txt`, `sitemap.xml`, and every referenced local asset.
 3. Reject unresolved template placeholders, root-relative project assets, duplicate metadata, missing local assets, a missing or changed favicon tag, and noncanonical sitemap entries.
 4. Serve `site-dist/` locally and inspect desktop and mobile layouts, collapsed navigation, keyboard focus, external links, and code-block readability.

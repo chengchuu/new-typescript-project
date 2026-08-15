@@ -266,7 +266,7 @@ for (const requiredText of [
   "webpack",
   "ESLint",
   "Prettier",
-  "pnpm install",
+  "npm install",
   "npm run check",
   "node dist/index.js",
   "@typescript/native",
@@ -279,6 +279,8 @@ for (const requiredText of [
     `Missing required site text: ${requiredText}`,
   );
 }
+
+assert.doesNotMatch(html, /p[n]pm/iu);
 
 const documentIds = new Set(
   [...html.matchAll(/\sid=(?:"([^"]+)"|'([^']+)')/gu)].map(
@@ -467,7 +469,7 @@ assert.match(workflow, /package-manager-cache:\s*false/u);
 assert.match(workflow, /^\s+path:\s*site-dist\/\s*$/mu);
 assert.match(workflow, /deploy:\s*\n\s+needs:\s*build/u);
 assert.match(workflow, /name:\s*github-pages/u);
-assert.doesNotMatch(workflow, /npm\s+(?:publish|pack)|pnpm\s+publish/u);
+assert.doesNotMatch(workflow, /(?:npm|p[n]pm)\s+(?:publish|pack)/u);
 assert.equal(packageJson.scripts["build:site"], "node scripts/build-site.mjs");
 assert.equal(
   packageJson.scripts["validate:site"],

@@ -7,14 +7,12 @@
 请先安装以下工具：
 
 - Node.js 22 或更高版本
-- pnpm
 - Git
 
 检查本地版本：
 
 ```bash
 node --version
-pnpm --version
 git --version
 ```
 
@@ -28,13 +26,13 @@ npm pkg delete scripts.test
 git init
 ```
 
-`npm init --yes` 不会添加 `packageManager` 字段。随后删除占位的 `test` 脚本，因为本项目没有自动化测试套件。
+随后删除占位的 `test` 脚本，因为本项目没有自动化测试套件。
 
 项目完成后的主要目录如下：
 
 ```plain
 ├── package.json
-├── pnpm-lock.yaml
+├── package-lock.json
 ├── tsconfig.json
 ├── webpack.config.js
 ├── eslint.config.js
@@ -85,16 +83,10 @@ TypeScript 7 提供原生 `tsc` 命令，但暂时不提供 `ts-loader` 和 type
 
 项目使用 ESLint 9，以覆盖全部 Node.js 22 版本。ESLint 10 要求 Node.js 22.13.0 或更高版本，与这里的引擎范围不一致。
 
-安装依赖并生成 `pnpm-lock.yaml`：
+安装依赖：
 
 ```bash
-pnpm install
-```
-
-项目提交 `pnpm-lock.yaml`。在需要严格复现依赖的环境中，可以执行：
-
-```bash
-pnpm install --frozen-lockfile
+npm install
 ```
 
 安装完成后，可以直接检查本地编译器版本：
@@ -360,10 +352,10 @@ Prettier 负责格式化，ESLint 负责代码质量。此方式符合 [Prettier
 ```plain
 dist/
 node_modules/
-pnpm-lock.yaml
+package-lock.json
 ```
 
-`pnpm-lock.yaml` 由 pnpm 管理，因此不交给 Prettier 重写。
+这些文件不属于手写源码，因此不交给 Prettier 重写。
 
 添加格式化脚本：
 
@@ -451,4 +443,4 @@ npm run check:site
 - [Prettier 与代码检查工具集成指南](https://prettier.io/docs/next/integrating-with-linters.html)
 - [GitHub：new-typescript-project](https://github.com/chengchuu/new-typescript-project)
 
-本文章首次编辑于 2020-08-18，最近更新于 2026-08-14。
+本文章首次编辑于 2020-08-18，最近更新于 2026-08-15。

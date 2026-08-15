@@ -7,7 +7,7 @@ This repository is a minimal TypeScript ESM example rather than a multi-componen
 - `src/index.ts` is the only maintained runtime source and application entry point. Keep its observable console message unchanged unless a task explicitly changes runtime behavior.
 - `dist/` contains ignored output shared by the direct TypeScript and webpack builds. Do not edit or commit it, and do not enable webpack output cleaning.
 - `package.json` declares the ESM package contract, Node.js 22 minimum, dependency versions, task scripts, JavaScript entry point (`dist/index.js`), declaration entry point (`dist/index.d.ts`), and published `dist/` plus `src/` files. No CommonJS build is provided.
-- `pnpm-lock.yaml` is committed. Use pnpm to install dependencies, do not create another lockfile, and do not add a `packageManager` field.
+- `package-lock.json` is committed. Use npm to install dependencies, do not create another lockfile, and do not add a `packageManager` field.
 - `README.md` is a reproducible Simplified Chinese tutorial for the current TypeScript, webpack, ESLint, and Prettier setup.
 - `site/` contains the maintained Simplified Chinese Pages template, route metadata, semantic styles, and theme behavior. Keep local asset references relative to the project subpath.
 - `scripts/build-site.mjs` generates the complete ignored `site-dist/` artifact. `scripts/validate-site.mjs` checks the artifact, theme scenarios, and deployment contract. Do not edit or commit `site-dist/`.
@@ -37,8 +37,7 @@ Both compiler paths load `tsconfig.json` as the single project source of truth. 
 Use Node.js 22 or later. Install dependencies from the repository root:
 
 ```bash
-pnpm install
-pnpm install --frozen-lockfile
+npm install
 ```
 
 Run repository tasks through the package scripts:

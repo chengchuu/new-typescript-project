@@ -1,34 +1,34 @@
-const path = require('path');
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-module.exports = {
-  mode: 'production',
-  entry: './src/index.ts',
+const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
+
+export default {
+  mode: "production",
+  entry: "./src/index.ts",
+  devtool: "source-map",
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist')
+    filename: "bundle.js",
+    path: path.resolve(currentDirectory, "dist"),
   },
-  module:{
-    rules:[
+  module: {
+    rules: [
       {
         test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/
-      },
-      {
-        test: /\.[jt]sx?$/,
-        exclude: /node_modules/,
         use: {
-          loader: "babel-loader",
+          loader: "ts-loader",
           options: {
-            cacheDirectory: true,
-            cacheCompression: false,
-            // babel.config.js 会被自动加载
-          }
-        }
-      }
-    ]
+            compilerOptions: {
+              declaration: false,
+              declarationMap: false,
+            },
+          },
+        },
+        exclude: /node_modules/,
+      },
+    ],
   },
   resolve: {
-    extensions: [".ts", ".tsx", ".js", ".jsx", ".json"]
-  }
+    extensions: [".ts", ".tsx"],
+  },
 };

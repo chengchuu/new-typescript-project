@@ -3,7 +3,7 @@
 
 ![创建一个新的 TypeScript 项目](http://blog.mazey.net/wp-content/uploads/2020/08/TypeScript_SF_7x3.jpg)
 
-本文介绍如何创建一个基于 TypeScript 7 的 Node.js 项目。项目使用 ECMAScript 模块 (ESM)，并保留两条构建路径：TypeScript 编译器生成可发布文件，webpack 生成独立 bundle。
+本文介绍如何从零创建一个基于 TypeScript 7 的 Node.js 项目。项目使用 ECMAScript 模块 (ESM)，并保留两条构建路径：使用 TypeScript 编译器生成可发布文件，以及使用 webpack 生成独立的 bundle。
 
 - [准备开发环境](#准备开发环境)
 - [安装 TypeScript 和开发工具](#安装-typescript-和开发工具)

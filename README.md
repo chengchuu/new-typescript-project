@@ -17,12 +17,13 @@
 
 ## 准备开发环境
 
-请先安装 Node.js 22 或更高版本。
+请先确保已安装 Node.js 和 npm。
 
 检查本地版本：
 
 ```bash
 node --version
+npm --version
 ```
 
 初始化项目：
@@ -45,7 +46,9 @@ npm init --yes
 
 ## 安装 TypeScript 和开发工具
 
-TypeScript 7 使用 Go 重写为原生编译器，`tsc` 可以直接用于编译和类型检查。但是，7.0 暂未提供编程 API。`ts-loader` 和 typescript-eslint 等工具仍需通过该 API 调用编译器，因此暂时依赖 TypeScript 6。为帮助项目平稳过渡，TypeScript 团队发布了 `@typescript/typescript6` 兼容包，并建议让 TypeScript 7 的 `tsc` 与依赖 TypeScript 6 API 的工具并行运行。具体背景参阅 [TypeScript 7.0 发布公告](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)。
+TypeScript 7 的编译器使用 Go 移植为原生实现，`tsc` 可以直接用于编译和类型检查。但是，TypeScript 7.0 暂未提供编程 API。`ts-loader` 和 typescript-eslint 等工具仍需通过该 API 调用编译器，因此暂时依赖 TypeScript 6。
+
+为帮助现有工具平稳过渡，TypeScript 团队发布了 `@typescript/typescript6` 兼容包，可以让 TypeScript 7 的 `tsc` 与依赖 TypeScript 6 API 的工具并行运行。具体背景参阅 [TypeScript 7.0 发布公告](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)。
 
 本项目据此并行安装两个版本：
 
@@ -87,7 +90,7 @@ npm install --save-dev \
 }
 ```
 
-随后，可以直接检查本地编译器版本：
+随后，可以检查两个编译器的版本：
 
 ```bash
 npm exec -- tsc --version
@@ -103,17 +106,14 @@ Version 6.0.3
 
 ## 配置 TypeScript 7
 
-在 `package.json` 中声明 ESM 和 Node.js 版本要求：
+在 `package.json` 中声明 ESM，并设置项目的入口文件和发布内容：
 
 ```json
 {
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": ["dist", "src"],
-  "engines": {
-    "node": ">=22"
-  }
+  "files": ["dist", "src"]
 }
 ```
 
@@ -145,7 +145,7 @@ Version 6.0.3
 }
 ```
 
-该文件是 TypeScript 两类任务的唯一项目配置来源。`NodeNext` 会结合 `package.json` 中的 `"type": "module"`，让 `dist/index.js` 保持 ESM 格式。
+该文件是两条 TypeScript 构建路径共用的项目配置。`NodeNext` 会结合 `package.json` 中的 `"type": "module"` 判断模块格式，使 `dist/index.js` 保持 ESM 格式。
 
 ## 编写并编译 TypeScript
 
@@ -218,11 +218,13 @@ npm run typecheck
 
 ## 使用 webpack 打包
 
-对于当前 Node.js 项目，TypeScript 7 直接编译已经足够。webpack 是一条可选的构建路径。`tsc` 负责类型检查和 JavaScript 编译，并生成声明文件与源码映射。在本项目的 `NodeNext` 配置下，`tsc` 会保留模块边界。`tsc` 不会把入口及其依赖合并为单个文件。
+对于当前 Node.js 项目，TypeScript 7 直接编译已经足够。webpack 是一条可选的构建路径。
 
-webpack 会从入口开始分析模块依赖。他会将项目代码和引用的模块合并为 `dist/bundle.js`，从而减少需要交付的文件。对于包含多个模块或第三方依赖的应用，单文件更便于交付。配置相应的 loader 或 plugin 后，webpack 还能处理 CSS、图片等资源。本项目没有启用这些能力。
+`tsc` 负责类型检查和 JavaScript 编译，并生成声明文件与源码映射。在本项目的 `NodeNext` 配置下，`tsc` 会保留模块边界，不会把入口文件及其依赖合并为单个文件。
 
-webpack 通过 `ts-loader` 加载 TypeScript。`ts-loader` 会从名为 `typescript` 的依赖中获取 TypeScript 6 兼容 API。webpack 项目配置仍来自同一个 `tsconfig.json`。更多配置方式请参阅 [webpack TypeScript 指南](https://webpack.js.org/guides/typescript/)。
+webpack 会从入口开始分析模块依赖，并将项目代码和引用的模块合并为 `dist/bundle.js`。对于包含多个模块或第三方依赖的应用，单文件通常更便于交付。配置相应的 loader 或 plugin 后，webpack 还可以处理 CSS、图片等资源。本文没有启用这些能力。
+
+webpack 通过 `ts-loader` 加载 TypeScript。`ts-loader` 会从名为 `typescript` 的依赖中获取 TypeScript 6 兼容 API。webpack 的 TypeScript 项目配置仍来自同一个 `tsconfig.json`。更多配置方式请参阅 [webpack TypeScript 指南](https://webpack.js.org/guides/typescript/)。
 
 创建 ESM 格式的 `webpack.config.js`：
 
@@ -265,7 +267,7 @@ export default {
 
 webpack 构建会关闭声明文件输出。TypeScript 7 直接构建仍是生成包文件和声明文件的主要路径。
 
-添加并运行构建脚本：
+添加 webpack 构建脚本：
 
 ```json
 {
@@ -274,6 +276,8 @@ webpack 构建会关闭声明文件输出。TypeScript 7 直接构建仍是生�
   }
 }
 ```
+
+运行构建并执行生成的 bundle：
 
 ```bash
 npm run build:webpack

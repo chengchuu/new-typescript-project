@@ -1,9 +1,9 @@
 <!-- omit from toc -->
-# 从零到一：创建一个 TypeScript 7 项目
+# 从零到一: 创建一个 TypeScript 7 项目
 
-![创建一个新的 TypeScript 项目](http://blog.mazey.net/wp-content/uploads/2020/08/TypeScript_SF_7x3.jpg)
+![创建一个 TypeScript 7 项目](http://blog.mazey.net/wp-content/uploads/2020/08/TypeScript_SF_7x3.jpg)
 
-本文介绍如何从零创建一个基于 TypeScript 7 的 Node.js 项目。项目使用 ECMAScript 模块 (ESM)，并保留两条构建路径：使用 TypeScript 编译器生成可发布文件，以及使用 webpack 生成独立的 bundle。
+本文介绍如何从零创建一个基于 TypeScript 7 的 Node.js 项目。项目使用 ECMAScript 模块 (ESM)，并提供两条构建路径。TypeScript 编译器负责生成可发布文件，webpack 负责生成独立的 bundle。
 
 - [准备开发环境](#准备开发环境)
 - [安装 TypeScript 和开发工具](#安装-typescript-和开发工具)
@@ -19,14 +19,14 @@
 
 请先确保已安装 Node.js 和 npm。
 
-检查本地版本：
+检查本地版本:
 
 ```bash
 node --version
 npm --version
 ```
 
-初始化项目：
+初始化项目:
 
 ```bash
 mkdir new-typescript-project
@@ -34,7 +34,7 @@ cd new-typescript-project
 npm init --yes
 ```
 
-项目完成后的主要目录如下：
+项目完成后的主要目录如下:
 
 ```plain
 ├── package.json
@@ -46,16 +46,16 @@ npm init --yes
 
 ## 安装 TypeScript 和开发工具
 
-TypeScript 7 的编译器使用 Go 移植为原生实现，`tsc` 可以直接用于编译和类型检查。但是，TypeScript 7.0 暂未提供编程 API。`ts-loader` 和 typescript-eslint 等工具仍需通过该 API 调用编译器，因此暂时依赖 TypeScript 6。
+TypeScript 7 的编译器使用 Go 重写为原生实现。`tsc` 可以直接执行编译和类型检查，但 TypeScript 7.0 暂未提供稳定的编程 API。`ts-loader` 和 typescript-eslint 等工具仍需通过编程 API 调用编译器，因此暂时依赖 TypeScript 6。
 
-为帮助现有工具平稳过渡，TypeScript 团队发布了 `@typescript/typescript6` 兼容包，可以让 TypeScript 7 的 `tsc` 与依赖 TypeScript 6 API 的工具并行运行。具体背景参阅 [TypeScript 7.0 发布公告](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)。
+为帮助现有工具平稳过渡，TypeScript 团队发布了 `@typescript/typescript6` 兼容包。该兼容包可以让 TypeScript 7 的 `tsc` 与依赖 TypeScript 6 API 的工具并行运行。具体背景参阅 [TypeScript 7.0 发布公告](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)。
 
-本项目据此并行安装两个版本：
+本项目据此并行安装两个版本:
 
 - `@typescript/native` 是 `typescript@7.0.2` 的别名，负责 `tsc`、直接构建、监听和类型检查。
-- `typescript` 是 `@typescript/typescript6@6.0.2` 的别名，向 webpack、`ts-loader` 和 typescript-eslint 提供兼容 API。该包提供 `tsc6` 命令，编译器版本为 6.0.3。
+- `typescript` 是 `@typescript/typescript6@6.0.2` 的别名，向 webpack、`ts-loader` 和 typescript-eslint 提供兼容 API。该依赖还提供 `tsc6` 命令，对应的编译器版本为 6.0.3。
 
-安装开发依赖：
+安装开发依赖:
 
 ```bash
 npm install --save-dev \
@@ -71,7 +71,7 @@ npm install --save-dev \
   "webpack-cli@^7.2.2"
 ```
 
-安装完成后，`package.json` 会包含以下开发依赖：
+安装完成后，`package.json` 会包含以下开发依赖:
 
 ```json
 {
@@ -90,14 +90,14 @@ npm install --save-dev \
 }
 ```
 
-随后，可以检查两个编译器的版本：
+随后，可以检查两个编译器的版本:
 
 ```bash
 npm exec -- tsc --version
 npm exec -- tsc6 --version
 ```
 
-预期输出：
+预期输出:
 
 ```plain
 Version 7.0.2
@@ -106,7 +106,7 @@ Version 6.0.3
 
 ## 配置 TypeScript 7
 
-在 `package.json` 中声明 ESM，并设置项目的入口文件和发布内容：
+在 `package.json` 中声明 ESM，并设置项目的入口文件和发布内容:
 
 ```json
 {
@@ -117,7 +117,7 @@ Version 6.0.3
 }
 ```
 
-创建 `tsconfig.json`：
+创建 `tsconfig.json`:
 
 ```json
 {
@@ -145,11 +145,11 @@ Version 6.0.3
 }
 ```
 
-该文件是两条 TypeScript 构建路径共用的项目配置。`NodeNext` 会结合 `package.json` 中的 `"type": "module"` 判断模块格式，使 `dist/index.js` 保持 ESM 格式。
+`tsconfig.json` 是 TypeScript 7 直接构建和 webpack 构建共用的项目配置。`NodeNext` 会结合 `package.json` 中的 `"type": "module"` 判断模块格式，使 `dist/index.js` 保持 ESM 格式。
 
 ## 编写并编译 TypeScript
 
-创建 `src/index.ts`：
+创建 `src/index.ts`:
 
 ```typescript
 const ProjectName = "new-typescript-project";
@@ -161,7 +161,7 @@ function say(): string {
 console.log(say());
 ```
 
-在 `package.json` 中定义直接构建、监听和类型检查脚本：
+在 `package.json` 中定义直接构建、监听和类型检查脚本:
 
 ```json
 {
@@ -173,13 +173,13 @@ console.log(say());
 }
 ```
 
-运行直接构建：
+运行直接构建:
 
 ```bash
 npm run build:ts
 ```
 
-TypeScript 7 会生成 `dist/index.js`、声明文件、声明映射和源码映射。`dist/index.js` 的内容如下：
+TypeScript 7 会生成 `dist/index.js`、声明文件、声明映射和源码映射。`dist/index.js` 的内容如下:
 
 <!-- prettier-ignore -->
 ```javascript
@@ -192,25 +192,25 @@ export {};
 //# sourceMappingURL=index.js.map
 ```
 
-运行编译结果：
+运行编译结果:
 
 ```bash
 node dist/index.js
 ```
 
-输出如下：
+输出如下:
 
 ```plain
 This project is new-typescript-project.
 ```
 
-开发期间可以启动监听模式：
+开发期间可以启动监听模式:
 
 ```bash
 npm run watch
 ```
 
-只检查类型而不写入文件：
+只检查类型而不写入文件:
 
 ```bash
 npm run typecheck
@@ -220,13 +220,15 @@ npm run typecheck
 
 对于当前 Node.js 项目，TypeScript 7 直接编译已经足够。webpack 是一条可选的构建路径。
 
-`tsc` 负责类型检查和 JavaScript 编译，并生成声明文件与源码映射。在本项目的 `NodeNext` 配置下，`tsc` 会保留模块边界，不会把入口文件及其依赖合并为单个文件。
+`tsc` 负责类型检查和 JavaScript 编译，也会生成声明文件与源码映射。在本项目的 `NodeNext` 配置下，`tsc` 会保留模块边界，不会把入口文件及其依赖合并为单个文件。
 
-webpack 会从入口开始分析模块依赖，并将项目代码和引用的模块合并为 `dist/bundle.js`。对于包含多个模块或第三方依赖的应用，单文件通常更便于交付。配置相应的 loader 或 plugin 后，webpack 还可以处理 CSS、图片等资源。本文没有启用这些能力。
+webpack 会从入口开始分析模块依赖，并将项目代码和引用的模块合并为 `dist/bundle.js`。对于包含多个模块或第三方依赖的应用，单文件通常更便于交付。
 
-webpack 通过 `ts-loader` 加载 TypeScript。`ts-loader` 会从名为 `typescript` 的依赖中获取 TypeScript 6 兼容 API。webpack 的 TypeScript 项目配置仍来自同一个 `tsconfig.json`。更多配置方式请参阅 [webpack TypeScript 指南](https://webpack.js.org/guides/typescript/)。
+配置相应的 loader 或 plugin 后，webpack 还可以处理 CSS、图片等资源。本文没有启用这些能力。
 
-创建 ESM 格式的 `webpack.config.js`：
+webpack 通过 `ts-loader` 加载 TypeScript。`ts-loader` 会从名为 `typescript` 的依赖中获取 TypeScript 6 兼容 API。webpack 仍使用同一个 `tsconfig.json`。更多配置方式请参阅 [webpack TypeScript 指南](https://webpack.js.org/guides/typescript/)。
+
+创建 ESM 格式的 `webpack.config.js`:
 
 ```javascript
 import path from "node:path";
@@ -265,9 +267,9 @@ export default {
 };
 ```
 
-webpack 构建会关闭声明文件输出。TypeScript 7 直接构建仍是生成包文件和声明文件的主要路径。
+webpack 构建会关闭声明文件输出。包文件和声明文件仍由 TypeScript 7 直接构建生成。
 
-添加 webpack 构建脚本：
+添加 webpack 构建脚本:
 
 ```json
 {
@@ -277,7 +279,7 @@ webpack 构建会关闭声明文件输出。TypeScript 7 直接构建仍是生�
 }
 ```
 
-运行构建并执行生成的 bundle：
+运行构建并执行生成的 bundle:
 
 ```bash
 npm run build:webpack
@@ -288,9 +290,9 @@ webpack 会同时生成 `dist/bundle.js` 和 `dist/bundle.js.map`。
 
 ## 配置 ESLint
 
-ESLint 使用 flat config，并组合 `@eslint/js` 和 typescript-eslint 的推荐规则。有关配置方式，请参阅 [typescript-eslint 入门指南](https://typescript-eslint.io/getting-started/)。
+ESLint 使用 flat config，并组合 `@eslint/js` 和 typescript-eslint 的推荐规则。具体配置方式参阅 [typescript-eslint 入门指南](https://typescript-eslint.io/getting-started/)。
 
-运行检查：
+运行检查:
 
 ```bash
 npm run lint
@@ -298,7 +300,7 @@ npm run lint
 
 ## 完整验证项目
 
-`check` 是仓库健康检查，他会依次检查格式、代码质量和类型，然后运行两条构建路径：
+`check` 是仓库健康检查。该脚本会依次检查格式、代码质量和类型，然后运行两条构建路径:
 
 ```json
 {
@@ -308,20 +310,20 @@ npm run lint
 }
 ```
 
-执行完整检查：
+执行完整检查:
 
 ```bash
 npm run check
 ```
 
-构建完成后，分别运行两个文件并比较输出：
+构建完成后，分别运行两个文件并比较输出:
 
 ```bash
 node dist/index.js
 node dist/bundle.js
 ```
 
-两个命令都应输出：
+两个命令都应输出:
 
 ```plain
 This project is new-typescript-project.
@@ -332,7 +334,7 @@ This project is new-typescript-project.
 - [TypeScript 7.0 发布公告](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)
 - [webpack TypeScript 指南](https://webpack.js.org/guides/typescript/)
 - [typescript-eslint 入门指南](https://typescript-eslint.io/getting-started/)
-- [GitHub：new-typescript-project](https://github.com/chengchuu/new-typescript-project)
+- [GitHub: new-typescript-project](https://github.com/chengchuu/new-typescript-project)
 
 ## 附录
 

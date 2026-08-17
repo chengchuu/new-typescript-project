@@ -1,4 +1,7 @@
+<!-- omit from toc -->
 # 从零到一：创建一个 TypeScript 7 项目
+
+![创建一个新的 TypeScript 项目](http://blog.mazey.net/wp-content/uploads/2020/08/TypeScript_SF_7x3.jpg)
 
 本文介绍如何创建一个基于 TypeScript 7 的 Node.js 项目。项目使用 ECMAScript 模块 (ESM)，并保留两条构建路径：TypeScript 编译器生成可发布文件，webpack 生成独立 bundle。
 
@@ -10,6 +13,7 @@
 - [配置 ESLint](#配置-eslint)
 - [完整验证项目](#完整验证项目)
 - [参考资料](#参考资料)
+- [附录](#附录)
 
 ## 准备开发环境
 
@@ -326,4 +330,15 @@ This project is new-typescript-project.
 - [typescript-eslint 入门指南](https://typescript-eslint.io/getting-started/)
 - [GitHub：new-typescript-project](https://github.com/chengchuu/new-typescript-project)
 
-本文章首次编辑于 2020-08-18，最近更新于 2026-08-15。
+## 附录
+
+案例: [GitHub: new-typescript-project](https://github.com/chengchuu/new-typescript-project)
+
+**版权声明**
+
+本文为原创文章，作者保留版权。转载请保留本文完整内容，并以超链接形式注明作者及原文出处。
+
+作者: [除除](https://github.com/chengchuu)
+原文: <https://blog.mazey.net/6532.html>
+
+(完)

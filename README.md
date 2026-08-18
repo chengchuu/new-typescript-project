@@ -347,8 +347,10 @@ This project is new-typescript-project.
 作者: [除除](https://github.com/chengchuu)
 原文: <https://blog.mazey.net/6532.html>
 
+<!-- ID: new-typescript-project/README -->
+
 (完)
 
 ```plain
-#TypeScript #TypeScript7 #NodeJS #ESM #webpack #ESLint #JavaScript #FrontendEngineering #BuildTools #WebDevelopment #前端工程化 #构建工具 #项目初始化 #开发实践
+#TypeScript #TypeScript7 #ESM #webpack #ESLint #JavaScript #WebDevelopment #前端工程化 #构建工具 #项目初始化
 ```

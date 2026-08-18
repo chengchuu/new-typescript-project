@@ -349,8 +349,6 @@ This project is new-typescript-project.
 
 <!-- ID: new-typescript-project/README -->
 
-(完)
-
 ```plain
 #TypeScript #TypeScript7 #ESM #webpack #ESLint #JavaScript #WebDevelopment #前端工程化 #构建工具 #项目初始化
 ```

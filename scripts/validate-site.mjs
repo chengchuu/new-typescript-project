@@ -493,7 +493,7 @@ const actionOrder = [
   "npm install",
   "npm run check",
   "actions/configure-pages@v6",
-  "npm run check:site",
+  "npm run build",
   "actions/upload-pages-artifact@v5",
   "actions/deploy-pages@v5",
 ];
@@ -534,19 +534,22 @@ assert.match(permissionBlock, /id-token:\s*write/u);
 assert.match(workflow, /cancel-in-progress:\s*false/u);
 assert.match(workflow, /node-version:\s*["']?22["']?/u);
 assert.match(workflow, /package-manager-cache:\s*false/u);
+assert.match(workflow, /^\s+run:\s*npm run build\s*$/mu);
+assert.doesNotMatch(
+  workflow,
+  /^\s+run:\s*npm run (?:build:site|validate:site|check:site)\s*$/mu,
+);
 assert.match(workflow, /^\s+path:\s*site-dist\/\s*$/mu);
 assert.match(workflow, /deploy:\s*\n\s+needs:\s*build/u);
 assert.match(workflow, /name:\s*github-pages/u);
 assert.doesNotMatch(workflow, /(?:npm|p[n]pm)\s+(?:publish|pack)/u);
-assert.equal(packageJson.scripts["build:site"], "node scripts/build-site.mjs");
 assert.equal(
-  packageJson.scripts["validate:site"],
-  "node scripts/validate-site.mjs",
+  packageJson.scripts.build,
+  "node scripts/build-site.mjs && node scripts/validate-site.mjs",
 );
-assert.equal(
-  packageJson.scripts["check:site"],
-  "npm run build:site && npm run validate:site",
-);
+assert.equal(packageJson.scripts["build:site"], undefined);
+assert.equal(packageJson.scripts["validate:site"], undefined);
+assert.equal(packageJson.scripts["check:site"], undefined);
 assert.doesNotMatch(packageJson.scripts.check, /site/u);
 assert.doesNotMatch(packageJson.scripts.prepack, /site/u);
 

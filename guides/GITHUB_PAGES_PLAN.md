@@ -63,11 +63,7 @@ Use `#4d8ffb` before theme initialization, then `#ffffff` for resolved light mod
 
 Use `package.json.homepage` as the production URL authority and change it to `https://chengchuu.github.io/new-typescript-project/`. Maintain one route record for the title, factual description, canonical URL, and indexability. Generate `index.html`, `robots.txt`, and a one-route `sitemap.xml`. Emit one title, description, canonical, Open Graph URL set, and non-empty `h1`. Use relative local asset URLs so the artifact works under the GitHub Pages project path and from a local static server.
 
-Add these package-script contracts:
-
-- `build:site`: generate `site-dist/` from maintained site source.
-- `validate:site`: validate the complete generated artifact and workflow contract.
-- `check:site`: build, then validate the Pages artifact.
+Add a `build` package-script contract that generates `site-dist/` from maintained site source, then validates the complete artifact and workflow contract.
 
 Keep `npm run check` and `prepack` package-only so website validity cannot block package assembly. Update `.gitignore`, Prettier and ESLint scopes, `README.md`, and `AGENTS.md` for the new source, artifact, validation, and deployment boundaries.
 
@@ -79,7 +75,7 @@ On a push to `main` or a manual dispatch, GitHub Actions must:
 2. Set up Node.js 22 with `actions/setup-node@v7` and dependency caching disabled.
 3. Run `npm install` and the existing `npm run check` package health check.
 4. Configure Pages with `actions/configure-pages@v6`.
-5. Build and validate the site through `npm run check:site`.
+5. Build and validate the site through `npm run build`.
 6. Upload only `site-dist/` with `actions/upload-pages-artifact@v5`.
 7. Deploy the validated artifact with `actions/deploy-pages@v5`.
 
@@ -87,7 +83,7 @@ Keep build and deploy jobs separate. The deploy job must depend on the validated
 
 ## Validation and acceptance criteria
 
-1. Run `npm install`, `npm run check`, and `npm run check:site` locally on Node.js 22.
+1. Run `npm install`, `npm run check`, and `npm run build` locally on Node.js 22.
 2. Confirm `site-dist/` contains `index.html`, `robots.txt`, `sitemap.xml`, and every referenced local asset.
 3. Reject unresolved template placeholders, root-relative project assets, duplicate metadata, missing local assets, a missing or changed favicon tag, and noncanonical sitemap entries.
 4. Serve `site-dist/` locally and inspect desktop and mobile layouts, collapsed navigation, keyboard focus, external links, and code-block readability.

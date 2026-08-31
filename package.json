@@ -9,9 +9,6 @@
     "dist",
     "src"
   ],
-  "engines": {
-    "node": ">=22"
-  },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
     "@typescript/native": "npm:typescript@7.0.2",
@@ -28,9 +25,7 @@
     "clean": "node --eval \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
     "build:ts": "tsc --project tsconfig.json",
     "build:webpack": "webpack --config webpack.config.js",
-    "build:site": "node scripts/build-site.mjs",
-    "validate:site": "node scripts/validate-site.mjs",
-    "check:site": "npm run build:site && npm run validate:site",
+    "build": "node scripts/build-site.mjs && node scripts/validate-site.mjs",
     "watch": "tsc --project tsconfig.json --watch",
     "typecheck": "tsc --project tsconfig.json --noEmit",
     "lint": "eslint .",

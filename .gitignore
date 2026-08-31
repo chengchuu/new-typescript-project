@@ -1,7 +1,3 @@
-# server
-server/
-
-.DS_Store
 node_modules/
 dist/
 site-dist/
@@ -13,16 +9,13 @@ test/e2e/reports
 selenium-debug.log
 doc/
 lib/
-
-# Editor directories and files
+server/
+.DS_Store
 .idea
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
-
-# cache
 .sass-cache/
 package-lock.json
-pnpm-lock.yaml
 yarn-error.log

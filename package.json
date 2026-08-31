@@ -9,9 +9,6 @@
     "dist",
     "src"
   ],
-  "engines": {
-    "node": ">=22"
-  },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
     "@typescript/native": "npm:typescript@7.0.2",

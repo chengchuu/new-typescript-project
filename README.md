@@ -17,13 +17,10 @@
 
 ## 准备开发环境
 
-请先确保已安装 Node.js 和 npm。
-
-检查本地版本:
+请先确保已安装 Node.js，检查本地版本:
 
 ```bash
 node --version
-npm --version
 ```
 
 初始化项目:
@@ -46,7 +43,7 @@ npm init --yes
 
 ## 安装 TypeScript 和开发工具
 
-TypeScript 7 的编译器使用 Go 重写为原生实现。`tsc` 可以直接执行编译和类型检查，但 TypeScript 7.0 暂未提供稳定的编程 API。`ts-loader` 和 typescript-eslint 等工具仍需通过编程 API 调用编译器，因此暂时依赖 TypeScript 6。
+TypeScript 7 的编译器使用 Go 重写为原生实现。`tsc` 可以直接执行编译和类型检查，但 TypeScript 7 暂未提供稳定的编程 API。`ts-loader` 和 typescript-eslint 等工具仍需通过编程 API 调用编译器，因此暂时依赖 TypeScript 6。
 
 为帮助现有工具平稳过渡，TypeScript 团队发布了 `@typescript/typescript6` 兼容包。该兼容包可以让 TypeScript 7 的 `tsc` 与依赖 TypeScript 6 API 的工具并行运行。具体背景参阅 [TypeScript 7.0 发布公告](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)。
 

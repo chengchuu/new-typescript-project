@@ -330,11 +330,10 @@ This project is new-typescript-project.
 - [TypeScript 7.0 发布公告](https://devblogs.microsoft.com/typescript/announcing-typescript-7-0/)
 - [webpack TypeScript 指南](https://webpack.js.org/guides/typescript/)
 - [typescript-eslint 入门指南](https://typescript-eslint.io/getting-started/)
-- [GitHub: new-typescript-project](https://github.com/chengchuu/new-typescript-project)
 
 ## 附录
 
-案例: [GitHub: new-typescript-project](https://github.com/chengchuu/new-typescript-project)
+案例: [github.com/chengchuu/new-typescript-project](https://github.com/chengchuu/new-typescript-project)
 
 **版权声明**
 

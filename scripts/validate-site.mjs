@@ -30,6 +30,10 @@ function stripTags(value) {
   return value.replace(/<[^>]*>/gu, "").trim();
 }
 
+function normalizeLineEndings(value) {
+  return value.replace(/\r\n?/gu, "\n");
+}
+
 async function readJson(filePath) {
   return JSON.parse(await readFile(filePath, "utf8"));
 }
@@ -199,9 +203,11 @@ function assertEarlyThemeState(harness, resolvedTheme, themeColor) {
 
 const packageJson = await readJson(path.join(projectRoot, "package.json"));
 const routes = await readJson(path.join(projectRoot, "site", "routes.json"));
-const workflow = await readFile(
-  path.join(projectRoot, ".github", "workflows", "pages.yml"),
-  "utf8",
+const workflow = normalizeLineEndings(
+  await readFile(
+    path.join(projectRoot, ".github", "workflows", "pages.yml"),
+    "utf8",
+  ),
 );
 const html = await readFile(path.join(outputDirectory, "index.html"), "utf8");
 const robots = await readFile(path.join(outputDirectory, "robots.txt"), "utf8");

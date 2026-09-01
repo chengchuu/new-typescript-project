@@ -1,4 +1,3 @@
-<!-- omit from toc -->
 # 从零到一: 创建一个 TypeScript 7 项目
 
 ![创建一个 TypeScript 7 项目](http://blog.mazey.net/wp-content/uploads/2020/08/TypeScript_SF_7x3.jpg)

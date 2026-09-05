@@ -288,6 +288,46 @@ webpack 会同时生成 `dist/bundle.js` 和 `dist/bundle.js.map`。
 
 ESLint 使用 flat config，并组合 `@eslint/js` 和 typescript-eslint 的推荐规则。具体配置方式参阅 [typescript-eslint 入门指南](https://typescript-eslint.io/getting-started/)。
 
+在项目根目录创建 `eslint.config.js`:
+
+```javascript
+import eslint from "@eslint/js";
+import eslintConfigPrettier from "eslint-config-prettier";
+import tseslint from "typescript-eslint";
+
+export default tseslint.config(
+  {
+    ignores: [
+      "node_modules/**",
+      "dist/**",
+      "site-dist/**",
+      "build/**",
+      "*.min.js",
+      ".git/**",
+    ],
+  },
+  eslint.configs.recommended,
+  tseslint.configs.recommended,
+  {
+    files: ["**/*.{ts,tsx}"],
+    rules: {
+      "no-console": "off",
+      "@typescript-eslint/no-inferrable-types": "off",
+    },
+  },
+  {
+    files: ["site/**/*.js"],
+    languageOptions: {
+      globals: {
+        document: "readonly",
+        window: "readonly",
+      },
+    },
+  },
+  eslintConfigPrettier,
+);
+```
+
 运行检查:
 
 ```bash

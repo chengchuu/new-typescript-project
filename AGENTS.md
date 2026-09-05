@@ -10,7 +10,6 @@ This repository contains a minimal TypeScript ECMAScript module (ESM) package an
 - `README.md` is the reproducible Simplified Chinese TypeScript tutorial. Keep commands, dependency examples, configuration snippets, and generated-output examples synchronized with the repository.
 - `site/` contains the maintained Pages template, route metadata, CSS, and theme/navigation JavaScript. `site/routes.json` is the single route record, and its canonical URL must match `package.json.homepage`.
 - `scripts/build-site.mjs` recreates the ignored `site-dist/` directory. `scripts/validate-site.mjs` validates the generated files, metadata, local references, theme scenarios, and Pages workflow.
-- `guides/` contains implementation plans. Plans describe proposed work and do not override the live package scripts or configuration.
 - `.vscode/settings.json` defines workspace title, Markdown table-of-contents levels, line-ending and whitespace rules, and browser preferences.
 
 ## Compiler and build contracts

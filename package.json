@@ -25,7 +25,7 @@
     "clean": "node --eval \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
     "build:ts": "tsc --project tsconfig.json",
     "build:webpack": "webpack --config webpack.config.js",
-    "build": "node scripts/build-site.mjs && node scripts/validate-site.mjs",
+    "build:pages": "node scripts/build-site.mjs && node scripts/validate-site.mjs",
     "watch": "tsc --project tsconfig.json --watch",
     "typecheck": "tsc --project tsconfig.json --noEmit",
     "lint": "eslint .",

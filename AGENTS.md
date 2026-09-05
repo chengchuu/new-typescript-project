@@ -43,10 +43,10 @@ npm run typecheck
 npm run build:ts
 npm run build:webpack
 npm run check
-npm run build
+npm run build:pages
 ```
 
-`npm run check` is the package health check: it checks formatting, lint rules, and types before running both package builds. `npm run build` is site-only: it rebuilds and validates `site-dist/`. Keep both `check` and `prepack` independent from the Pages build. `npm run format` and `npm run lint:fix` write files, so inspect their scope first.
+`npm run check` is the package health check: it checks formatting, lint rules, and types before running both package builds. `npm run build:pages` is site-only: it rebuilds and validates `site-dist/`. Keep both `check` and `prepack` independent from the Pages build. `npm run format` and `npm run lint:fix` write files, so inspect their scope first.
 
 `npm run watch` starts the TypeScript 7 compiler in watch mode. ESLint uses flat config with the recommended JavaScript and TypeScript rules; Prettier handles formatting separately.
 
@@ -54,8 +54,8 @@ The `prepack` lifecycle removes only `dist/` and runs `npm run check`. Use `npm 
 
 ## Deployment and verification
 
-`.github/workflows/pages.yml` runs on pushes to `main` and manual dispatches. It uses Node.js 22, installs with npm, runs the package health check, configures Pages, runs `npm run build`, uploads only `site-dist/`, and deploys through the protected `github-pages` environment.
+`.github/workflows/pages.yml` runs on pushes to `main` and manual dispatches. It uses Node.js 22, installs with npm, runs the package health check, configures Pages, runs `npm run build:pages`, uploads only `site-dist/`, and deploys through the protected `github-pages` environment.
 
-For implementation changes, run the focused command plus `npm run check`. Run `npm run build` when site source, site scripts, route metadata, or the workflow changes. When runtime behavior changes, execute both `node dist/index.js` and `node dist/bundle.js`; their output must match. Finish with `git diff --check` and `git status --short`.
+For implementation changes, run the focused command plus `npm run check`. Run `npm run build:pages` when site source, site scripts, route metadata, or the workflow changes. When runtime behavior changes, execute both `node dist/index.js` and `node dist/bundle.js`; their output must match. Finish with `git diff --check` and `git status --short`.
 
 There is no automated test suite. Do not describe `npm run check` as a test command. Preserve unrelated work, and do not stage, commit, push, deploy, or publish unless requested.
